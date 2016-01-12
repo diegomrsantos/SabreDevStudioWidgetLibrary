@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <p>
+    Widgets are tested and working on the following desktop browsers, on Windows OS only:
+    <dl>
+        <dt>Chrome</dt><dd>version 41</dd>
+        <dt>Firefox</dt><dd>version 35</dd>
+        <dt>Internet Explorer</dt><dd>version 11</dd>
+        <dt>Internet Explorer</dt><dd>emulator mode for version 9</dd>
+        <dt>Internet Explorer</dt><dd>emulator mode for version 8</dd>
+        <dt>Safari</dt><dd>version 8</dd>
+    </dl>
+    </p>
+    <p>
+        We know that widgets will not work on these browsers:
+        <dl>
+            <dt>Internet Explorer 8 and 9</dt><dd>currently widgets need to to cross domain call to Sabre api. These HTTP requests must have custom headers with auth token, while IE 8 and 9 (before IE 10) does not support sending CORS requests (preflight OPTIONS request is needed, it is not supported). Also plain JSONP will not work either as POST call is needed. <a href="http://blogs.msdn.com/b/ieinternals/archive/2010/05/13/xdomainrequest-restrictions-limitations-and-workarounds.aspx">Details on IE 8 and 9 implementation</a></dd>
+        </dl>
+    </p>
+    <p>
+    Widgets were not tested on:
+    <dl>
+        <dt>Opera</dt><dd>because first of small market share, second Opera starting with version 15 uses Chromium, and we are testing on Chrome.</dd>
+    </dl>
+
+    </p>
+</body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "amd",
+    "target": "es5",
+    "outDir": "build-js",
+    "declaration": true,
+    "sourceMap": true
+  },
+    "exclude": [
+        ".idea"
+      , ".sass-cache"
+      , "bower_components"
+      , "build"
+      , "build-js"
+      , "dist"
+      , "doc"
+      , "documentation"
+      , "e2e-test"
+      , "node_modules"
+      , "tmp"
+      , "typings"
+      , "widgets"
+      , "www"
+      , "www-customer-page-downloaded"
+      , "www-customer-page-workarea"
+    ]
+}

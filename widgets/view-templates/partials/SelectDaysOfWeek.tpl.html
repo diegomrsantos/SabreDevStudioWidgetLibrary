@@ -1,0 +1,8 @@
+<div>
+    <ng-transclude></ng-transclude>
+    <div class="btn-group btn-group-sm">
+        <label class="btn btn-primary" ng-repeat="day in daysOfWeekSymbols track by $index" ng-model="daysSelected[$index]" btn-checkbox>
+            {{day}}
+        </label>
+    </div>
+</div>

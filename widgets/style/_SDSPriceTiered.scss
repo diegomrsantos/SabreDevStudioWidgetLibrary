@@ -1,0 +1,11 @@
+%SDSPriceTiered {
+  $priceTier1Color: red;
+  $priceTier2Color: #E8AB0F;
+
+  &.SDSPriceTier-1 {
+    color: $priceTier1Color;
+  }
+  &.SDSPriceTier-2 {
+    color: $priceTier2Color;
+  }
+}

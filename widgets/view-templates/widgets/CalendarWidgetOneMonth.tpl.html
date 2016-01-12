@@ -1,0 +1,27 @@
+<table class="SDSTable table table-condensed table-bordered">
+    <thead>
+        <tr class="text-info">
+            <th ng-repeat="dayOfWeekName in calendar.dayOfWeekNames">{{dayOfWeekName}}</th><!-- Su Mo ... Fr Sa -->
+        </tr>
+    </thead>
+
+    <tbody>
+        <tr ng-repeat="week in month.weeks">
+
+            <td highlight-length-of-stay length-of-stay-days="{{calendar.getLastSearchCriteria().getLengthOfStay()}}" highlight-class="bg-info"
+                ng-repeat="day in week.days"
+                class='SDSCalendarCell' ng-class="{'SDSCalendarPrevOrNextMonthDay': day.isPrevOrNextMonthDay}"
+                ng-click="cellClicked(day.day)">
+                    <div class="SDSCalendarCellContent" ng-hide="day.isPrevOrNextMonthDay && doNotShowPrevNextMonthDays">
+                        <div class='SDSCalendarDateNumber pull-right'>
+                                {{day.day.format('D')}} <!-- day of month: 1 2 ... 30 31 -->
+                        </div>
+                        <div class="clearfix"></div>
+                        <div ng-show="day.price" class='SDSCalendarCellPrice text-center SDSPriceTier-{{day.priceTier}}'>{{day.price | currency:day.currency}}</div>
+                    </div>
+            </td>
+
+        </tr>
+    </tbody>
+
+</table>

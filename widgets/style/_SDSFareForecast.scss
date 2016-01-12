@@ -1,0 +1,23 @@
+.SDSFareForecastWidget {
+
+  // enforce size of this widget to be small
+  width: 23rem;
+  height: 5rem;
+
+  // shrink default bootstrap paddings
+  .panel-body {
+    padding: 5px 2px;
+  }
+}
+
+.SDSRecommendationBuy {
+  color: green;
+}
+
+.SDSRecommendationWait {
+  color: peru;
+}
+
+.SDSRecommendationUnknown {
+  color: darkgray;
+}

@@ -1,0 +1,32 @@
+body {
+    background-color: white;
+}
+
+#SDSSearchFormWrapper_1 {
+    margin-left: 50px;
+    margin-top: 50px;
+    width: 70%;
+    height: 200px;
+}
+
+#SDSSearchFormWrapper_2 {
+    margin-left: 50px;
+    width: 20%;
+}
+
+#CalendarSearchResults {
+    /*margin-left: 50px;*/
+    /*margin-top: 20px;*/
+    width: 40%;
+    /*height: 250px;*/
+}
+
+#mainPageContainer #SDSSearchFormWrapper_2,  #mainPageContainer #CalendarSearchResults {
+    display: inline-block;
+    vertical-align: top;
+}
+
+#LeadPriceChart {
+    width: 600px;
+    height: 250px;
+}

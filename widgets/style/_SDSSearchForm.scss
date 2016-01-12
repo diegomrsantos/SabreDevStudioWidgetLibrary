@@ -1,0 +1,44 @@
+.SDSSearchFormWidget {
+
+  // modify default Bootstrap paddings
+  input {
+    padding-top: 8px;
+    padding-bottom: 5px;
+  }
+
+  .input-sm {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+
+  .SDSPlusMinusDaysLabel {
+    width: 18rem; //setting constant width on labels so that select boxes are in one column
+  }
+
+}
+
+// add .has-error styling also to the input-group-btn that is used within a form. Copied from bootstrap
+.has-error .input-group-btn {
+    border-color: #a94442;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+}
+
+.has-error .input-group-btn:focus {
+    border-color: #843534;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;
+}
+
+.SDSDisabledLabel {
+  // copied from bootstrap .btn.disabled
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  opacity: .65;
+  cursor: not-allowed;
+}
+
+.SDSNumberInput2Digits {
+  width: 5rem;
+}

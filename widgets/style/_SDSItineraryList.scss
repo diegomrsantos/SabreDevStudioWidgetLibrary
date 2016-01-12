@@ -1,0 +1,91 @@
+@import "SDSCommon";
+
+.SDSLegList {
+  border-right: $itemsSeparatingLineStyle;
+  box-sizing: border-box;
+
+  // rest bootstrap column paddings so that the separating dotted line is displayed in whole length (line is not displayed on paddings)
+  padding-left: 0;
+  padding-right: 0;
+
+  > li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  > li:not(:last-child) {
+    border-bottom: dotted $itemsSeparatingLineColor 1px;
+  }
+
+}
+
+.SDSIconAirplaneArrow {
+  background: url("../img/sabre.png") -109px -161px no-repeat;
+  width: 2px;
+  height: 14px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+.SDSIconRedEye {
+  content:url("../img/icons/moon_16_16.png");
+}
+
+.SDSIconHurryUpShortConnection {
+  content:url("../img/icons/running_16_16.png");
+}
+
+.SDSIconLongConnection {
+  content:url("../img/icons/clock_16_16.png");
+}
+
+.SDSIconFewSeatsLeft {
+  content:url("../img/icons/attention_16_16.png");
+}
+
+.SDSLegSummary {
+  padding-bottom: 0.5rem;
+}
+
+.SDSLegShortSummary {
+  margin-top: 10px;
+}
+
+.SDSFlightDepartureOrArrival {
+  > .SDSLabelForTravelDate {
+    width: 6%;
+    min-width: 5rem;
+  }
+}
+
+.SDSTravelTime {
+  width: 5%;
+  min-width: 4rem;
+  margin-right: 0.5rem;
+}
+
+.SDSTravelDateLong {
+  width: 10%;
+  min-width: 9.5rem;
+}
+
+.SDSTravelDateTime {
+  width: 10%;
+  min-width: 15rem;
+}
+
+.SDSFullAirportName {
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+.SDSAirport {
+  width: 3.7rem;
+}
+
+.SDSPriceSummary .SDSCheckoutButton {
+  margin-bottom: 0.4rem;
+}
+
+.SDSPricePerStopsPerAirlineSummaryTable td {
+  white-space:nowrap;
+}

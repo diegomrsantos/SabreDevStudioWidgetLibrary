@@ -1,0 +1,188 @@
+<div ng-transclude>
+    <script type="text/ng-template" id="FareNabberSubscriptionFormModal.html.tpl">
+        <div class="SDSWidget SDSFareNabberWidget">
+
+            <div class="modal-header">
+                <h3 class="modal-title">Subscribe to price alerts</h3>
+            </div>
+
+            <form class="form-horizontal" name="fareNabberForm" novalidate ng-submit="fareNabberForm.$valid && subscribe()">
+                <div class="modal-body">
+
+                    <div class="form-group" ng-class="{'has-error':fareNabberForm.$submitted && fareNabberForm.subscriberEmail.$invalid}">
+                        <label for="SDSFareNabberForm_SubscriberEmail" class="input-sm col-sm-3 control-label">Email</label>
+                        <div class="col-sm-9">
+                            <input type="email" id="SDSFareNabberForm_SubscriberEmail" name="subscriberEmail" class="form-control input-sm col-sm-10" placeholder="Type your email" autofocus required ng-model="subscriberEmail">
+                            <div class="help-block" ng-show="fareNabberForm.$submitted && fareNabberForm.subscriberEmail.$invalid">
+                                <small ng-show="fareNabberForm.subscriberEmail.$error.required">Input your email</small>
+                                <small ng-show="fareNabberForm.subscriberEmail.$error.email">Invalid email</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_Origin" class="input-sm col-sm-3 control-label">Trip departure airport or city</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control input-sm" id="SDSFareNabberForm_Origin" name="origin" placeholder="Trip departure airport or city" required autocomplete="off" ng-model="origin">
+                            <!--<input-airport class="form-control input-sm" id="SDSFareNabberForm_Origin" name="origin" required airport="origin" preselected-airport="origin"></input-airport>-->
+                            <!--<input type="text" id="SDSFareNabberForm_Origin" name="origin" class="form-control input-sm" placeholder="Trip departure airport or city" required autocomplete="off" ng-model="origin"-->
+                            <!--typeahead="airport as (airport | airportNameWithIATACode) for airport in airports | filter:$viewValue | airportNameBestSuggestionComparator:$viewValue | limitTo:30" typeahead-min-length="2" typeahead-wait-ms="50">-->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_Destination" class="input-sm col-sm-3 control-label">Trip arrival airport or city</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control input-sm" id="SDSFareNabberForm_Destination" name="destination" placeholder="Trip arrival airport or city" required autocomplete="off" ng-model="destination">
+                            <!--<input type="text" id="SDSFareNabberForm_Destination" name="destination" class="form-control input-sm" placeholder="Trip arrival airport or city" required autocomplete="off" ng-model="destination"-->
+                               <!--typeahead="airport as (airport | airportNameWithIATACode) for airport in airports | filter:$viewValue | airportNameBestSuggestionComparator:$viewValue | limitTo:30" typeahead-min-length="2" typeahead-wait-ms="50">-->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_PreferredAirlines" class="input-sm col-sm-3 control-label">Preferred Airlines</label>
+                        <div class="col-sm-9">
+                            <!-- do not style select-preferred-airlines with classes input-sm form-control and so on. the css for ui-select already takes care of bootstrap style, adding these classes additionally only messes the style-->
+                            <select-preferred-airlines id="SDSFareNabberForm_PreferredAirlines" name="PreferredAirlines" preferred-airlines="preferredAirlines"></select-preferred-airlines>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_DepartureDate" class="input-sm col-sm-3 control-label">Leaving on</label>
+                        <div class="col-sm-3">
+                            <input-date class="input-group" id="SDSFareNabberForm_DepartureDate" name="departureDate" class="form-control input-sm" required="true" date="departureDate" min-date="{{::defaultOptions.earliestTravelStart}}"></input-date>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_DepartureDaysOfWeek" class="input-sm control-label col-sm-3">Departure days of week</label>
+                        <select-days-of-week class="col-sm-9" id="SDSFareNabberForm_DepartureDaysOfWeek" days-of-week="daysOfTravelPreference.outbound"></select-days-of-week>
+                    </div>
+
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <div>
+                            <a href="" ng-click="showOutboundFlightsTimeOfDaySelection = !showOutboundFlightsTimeOfDaySelection">Set specific hours for departure flights</a>
+                        </div>
+                        <div class="well well-lg form-group col-sm-6" collapse="!showOutboundFlightsTimeOfDaySelection">
+                            <label class="input-sm control-label">
+                                Flight departure time of day
+                            </label>
+                            <div>
+                                <input-time-of-day-range class="form-control input-sm" range="outboundTravelTimeRange.departure"></input-time-of-day-range>
+                            </div>
+                            <label class="input-sm control-label">
+                                Flight arrival time of day
+                            </label>
+                            <div>
+                                <input-time-of-day-range class="form-control input-sm" range="outboundTravelTimeRange.arrival"></input-time-of-day-range>
+                            </div>
+                        </div>
+                        <div class="row SDSBottomBuffer-xs"></div>
+                    </div>
+
+                    <div ng-if="returnDate">
+                        <div class="form-group">
+                            <label for="SDSFareNabberForm_ReturnDate" class="input-sm col-sm-3 control-label">Returning on</label>
+                            <div class="col-sm-3">
+                                <input-date class="input-group" id="SDSFareNabberForm_ReturnDate" name="returnDate" class="form-control input-sm"
+                                            required="(returnDate)? true: false" date="returnDate" min-date="{{::defaultOptions.earliestTravelStart}}"></input-date>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="SDSFareNabberForm_ReturnDaysOfWeek" class="input-sm control-label col-sm-3">Return days of week</label>
+                            <select-days-of-week class="col-sm-9"id="SDSFareNabberForm_ReturnDaysOfWeek" days-of-week="daysOfTravelPreference.inbound"></select-days-of-week>
+                        </div>
+
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <div>
+                                <a href="" ng-click="showInboundFlightsTimeOfDaySelection = !showInboundFlightsTimeOfDaySelection">Set specific hours for return flights</a>
+                            </div>
+                            <div class="well well-lg form-group col-sm-6" collapse="!showInboundFlightsTimeOfDaySelection">
+                                <label class="input-sm control-label">
+                                    Flight departure time of day
+                                </label>
+                                <div>
+                                    <input-time-of-day-range class="form-control input-sm" range="inboundTravelTimeRange.departure"></input-time-of-day-range>
+                                </div>
+                                <label class="input-sm control-label">
+                                    Flight arrival time of day
+                                </label>
+                                <div>
+                                    <input-time-of-day-range class="form-control input-sm" range="inboundTravelTimeRange.arrival"></input-time-of-day-range>
+                                </div>
+                            </div>
+                            <div class="row SDSBottomBuffer-xs"></div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <div class="checkbox">
+                                <label for="SDSFareNabberForm_DirectFlightsOnly">
+                                    <input type="checkbox" name="DirectFlightsOnly" id="SDSFareNabberForm_DirectFlightsOnly" ng-model="directFlightsOnly">
+                                    Direct flights only
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <div class="checkbox">
+                                <label for="SDSFareNabberForm_AllowInterline">
+                                    <input type="checkbox" name="AllowInterline" id="SDSFareNabberForm_AllowInterline" ng-model="defaultOptions.allowInterline">
+                                    Allow multiple airline itineraries
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_PaxNumber" class="input-sm control-label col-sm-3">Number of {{passengerType | passengerType | lowercase}} passengers</label>
+                        <div class="col-sm-9">
+                            <input type="number" id="SDSFareNabberForm_PaxNumber" name="passengerCount" value="1" min="1" max="9" required class="form-control input-sm SDSPaxNbrInput" string-to-number ng-model="passengerCount">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_MaximumAcceptablePrice" class="input-sm col-sm-3 control-label">Maximum acceptable price</label>
+
+                        <div class="col-sm-3">
+                            <input type="number" step="50" id="SDSFareNabberForm_MaximumAcceptablePrice" name="maximumAcceptablePrice" class="form-control input-sm" placeholder="Max price" min="0" required string-to-number ng-model="maximumAcceptablePrice">
+                        </div>
+                        <div class="col-sm-3">
+                                <input type="text" id="SDSFareNabberForm_MaximumAcceptablePriceCurrency" name="maximumAcceptablePriceCurrency" class="form-control input-sm" placeholder="currency" ng-value="USD" required ng-model="maximumAcceptablePriceCurrency" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="SDSFareNabberForm_SubscriptionExpiryDate" class="input-sm col-sm-3 control-label">Expire subscription after <em>(optional)</em></label>
+                        <div class="col-sm-3">
+                            <input-date class="input-group" id="SDSFareNabberForm_SubscriptionExpiryDate" name="subscriptionExpiryDate" class="form-control input-sm" date="subscriptionExpiryDate"></input-date>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+                </div>
+            </form>
+
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="FareNabberSubscriptionSuccessful.html.tpl">
+        <div class="modal-body">
+            <span class="text-success center-block">You subscribed successfully to the price alert. Thank you!</span>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary center-block" ng-click="ok()">OK</button>
+        </div>
+    </script>
+
+
+</div>

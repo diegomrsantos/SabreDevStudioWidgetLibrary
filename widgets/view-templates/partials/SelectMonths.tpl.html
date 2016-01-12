@@ -1,0 +1,9 @@
+<div>
+    <ng-transclude></ng-transclude>
+    <div class="checkbox" ng-repeat="month in allMonths track by $index">
+        <label class="control-label input-sm">
+            <input class="form-control" type="checkbox" value="$index">
+            {{month}}
+        </label>
+    </div>
+</div>

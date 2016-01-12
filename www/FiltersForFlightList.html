@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flight List Instaflights</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" href="../bower_components/angular-rangeslider/angular.rangeSlider.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+
+    <style>
+
+        #ItineraryListFilterPane {
+            vertical-align: top;
+            width: 24%;
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        #ItineraryList {
+            vertical-align: top;
+            background-color: inherit;
+            width: 74%;
+            display: inline-block;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="mainPageContainer">
+        <partial command="include('partials/navigation.html')"></partial>
+        <div class="embeddedWidget" data-search-form hide-fields="IsPlusMinus3DaysFlexible" selectable-airports-for-this-pos-only="1"></div>
+        <error-display class="embeddedWidget"></error-display>
+        <filters-panel id="ItineraryListFilterPane">
+        </filters-panel>
+        <div id="ItineraryList">
+            <itinerary-list  active-search="true"></itinerary-list>
+        </div>
+    </div>
+
+    <script async data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+</body>
+</html>

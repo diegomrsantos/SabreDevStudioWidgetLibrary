@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Destination Pricer</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+</head>
+<body>
+    <div id="mainPageContainer" class="container-fluid">
+        <partial command="include('partials/navigation.html')"></partial>
+        <search-form-inspirational class="embeddedWidget"></search-form-inspirational>
+        <error-display class="embeddedWidget"></error-display>
+        <!--<div class="embeddedWidget" destination-pricer destination="LAX" point-of-sale-country="GB"></div>-->
+        <destination-pricer class="embeddedWidget"></destination-pricer>
+    </div>
+
+    <script data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+    <!--<script async src="../dist/SDSWidgets.dist.js"></script>-->
+</body>
+</html>

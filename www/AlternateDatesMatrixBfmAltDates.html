@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ALternate Dates Lead Fares</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+</head>
+<body>
+
+<div id="mainPageContainer">
+    <partial command="include('partials/navigation.html')"></partial>
+    <div class="embeddedWidget" data-search-form options-per-day="1" preselect-date-flexibility-criterion="plusMinusConstantDaysFlexibility"></div>
+    <error-display class="embeddedWidget"></error-display>
+    <div class="row">
+        <div class="col-lg-6">
+            <alternate-dates-matrix active-search-web-service="bfmAltDates"></alternate-dates-matrix>
+            <!--<alternate-dates-matrix-->
+                    <!--active-search-web-service="advancedCalendar"-->
+                    <!--origin="DFW"-->
+                    <!--destination="LAX"-->
+                    <!--departure-date="2015-08-27"-->
+                    <!--return-date="2015-09-10"-->
+                    <!--alt-dates-plus-minus="3">-->
+            <!--</alternate-dates-matrix>-->
+        </div>
+        <div class="col-lg-8">
+            <itinerary-list id="ItineraryList"></itinerary-list>
+        </div>
+    </div>
+</div>
+<script async data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+</body>
+</html>

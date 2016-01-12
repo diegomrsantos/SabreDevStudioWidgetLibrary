@@ -1,0 +1,95 @@
+<svg class="SDSHighLowMedianCurrentChart" xmlns="http://www.w3.org/2000/svg">
+
+    <defs>
+        <marker class="SDSHLMCChartMainBarMarkerCircle" id="markerCircle" markerWidth="8" markerHeight="8" refX="5" refY="5">
+            <circle cx="5" cy="5" r="2"/>
+        </marker>
+    </defs>
+
+    <g>
+        <rect class="SDSHLMCChartMainBar"
+              ng-attr-x="{{chartConfig.topLeftOffset.x}}"
+              ng-attr-y="{{chartConfig.topLeftOffset.y}}"
+              ng-attr-width="{{chartConfig.bar.width}}"
+              ng-attr-height="{{chartConfig.bar.height}}"/>
+
+        <!-- high data line -->
+        <line class="SDSHLMCChartDataLine"
+              ng-attr-x1="{{chartConfig.topLeftOffset.x}}"
+              ng-attr-y1="{{chartConfig.topLeftOffset.y}}"
+              ng-attr-x2="{{chartConfig.topLeftOffset.x + chartConfig.bar.width}}"
+              ng-attr-y2="{{chartConfig.topLeftOffset.y}}"/>
+        <!-- high pointer line -->
+        <line class="SDSHLMCChartPointerLine"
+              ng-attr-x1="{{chartHelpers.getPointerLineXStart()}}"
+              ng-attr-y1="{{chartConfig.topLeftOffset.y}}"
+              ng-attr-x2="{{chartHelpers.getPointerLineXEnd()}}"
+              ng-attr-y2="{{chartConfig.topLeftOffset.y}}" />
+        <text class="SDSHLMCChartDataLegend"
+              ng-attr-x="{{chartHelpers.getPointerLineXEnd() + chartConfig.pointerLineRightMargin}}"
+              ng-attr-y="{{chartConfig.topLeftOffset.y}}">
+            <tspan>{{highText}}</tspan>
+            <tspan dx="2">{{highValue | applyFilter:valuesFilter:valuesFilterArguments}}</tspan>
+        </text>
+
+        <!-- low data line -->
+        <line class="SDSHLMCChartDataLine"
+              ng-attr-x1="{{chartConfig.topLeftOffset.x}}"
+              ng-attr-y1="{{chartConfig.topLeftOffset.y + chartConfig.bar.height}}"
+              ng-attr-x2="{{chartHelpers.getPointerLineXEnd()}}"
+              ng-attr-y2="{{chartConfig.topLeftOffset.y + chartConfig.bar.height}}"/>
+        <!-- low pointer line -->
+        <line class="SDSHLMCChartPointerLine"
+              ng-attr-x1="{{chartHelpers.getPointerLineXStart()}}"
+              ng-attr-y1="{{chartConfig.topLeftOffset.y + chartConfig.bar.height}}"
+              ng-attr-x2="{{chartHelpers.getPointerLineXEnd()}}"
+              ng-attr-y2="{{chartConfig.topLeftOffset.y + chartConfig.bar.height}}" />
+        <text class="SDSHLMCChartDataLegend"
+              ng-attr-x="{{chartHelpers.getPointerLineXEnd() + chartConfig.pointerLineRightMargin}}"
+              ng-attr-y="{{chartConfig.topLeftOffset.y + chartConfig.bar.height}}">
+            <tspan>{{lowText}}</tspan>
+            <tspan dx="2">{{lowValue | applyFilter:valuesFilter:valuesFilterArguments}}</tspan>
+        </text>
+
+        <!-- median data line -->
+        <line class="SDSHLMCChartDataLine"
+              ng-attr-x1="{{chartConfig.topLeftOffset.x}}"
+              ng-attr-y1="{{chartHelpers.getMedianNormalizedYPosition()}}"
+              ng-attr-x2="{{chartConfig.topLeftOffset.x + chartConfig.bar.width}}"
+              ng-attr-y2="{{chartHelpers.getMedianNormalizedYPosition()}}"/>
+        <!-- median (pointer) line -->
+        <line class="SDSHLMCChartPointerLine"
+              ng-attr-x1="{{chartHelpers.getPointerLineXStart()}}"
+              ng-attr-y1="{{chartHelpers.getMedianNormalizedYPosition()}}"
+              ng-attr-x2="{{chartHelpers.getPointerLineXEnd()}}"
+              ng-attr-y2="{{chartHelpers.getMedianNormalizedYPosition()}}" />
+        <text class="SDSHLMCChartDataLegend"
+              ng-attr-x="{{chartHelpers.getPointerLineXEnd() + chartConfig.pointerLineRightMargin}}"
+              ng-attr-y="{{chartHelpers.getMedianNormalizedYPosition()}}">
+            <tspan>{{medianText}}</tspan>
+            <tspan dx="2">{{medianValue | applyFilter:valuesFilter:valuesFilterArguments}}</tspan>
+        </text>
+
+        <!-- current data(!) line -->
+        <line class="SDSHLMCChartDataLine" ng-if="currentValue"
+              ng-attr-x1="{{chartConfig.topLeftOffset.x}}"
+              ng-attr-y1="{{chartHelpers.getCurrentNormalizedYPosition()}}"
+              ng-attr-x2="{{chartConfig.topLeftOffset.x + chartConfig.bar.width}}"
+              ng-attr-y2="{{chartHelpers.getCurrentNormalizedYPosition()}}"/>
+        <!-- current (pointer) line -->
+        <path class="SDSHLMCChartPointerLine" ng-if="currentValue"
+              ng-attr-d="
+                M {{chartHelpers.getPointerLineXStart()}} {{chartHelpers.getCurrentNormalizedYPosition()}}
+                L {{chartHelpers.getPointerLineXStart() - chartConfig.bar.width * 0.25}} {{chartHelpers.getCurrentLegendYPosition()}}
+                L {{chartHelpers.getOppositePointerLineXEnd()}} {{chartHelpers.getCurrentLegendYPosition()}}
+              ">
+        </path>
+        <text class="SDSHLMCChartDataLegend" style="text-anchor: end" ng-if="currentValue"
+              ng-attr-x="{{chartHelpers.getOppositePointerLineXEnd() - chartConfig.pointerLineRightMargin}}"
+              ng-attr-y="{{chartHelpers.getCurrentLegendYPosition()}}">
+            <tspan>{{currentText}}</tspan>
+            <tspan dx="2">{{currentValue | applyFilter:valuesFilter:valuesFilterArguments}}</tspan>
+        </text>
+
+    </g>
+</svg>

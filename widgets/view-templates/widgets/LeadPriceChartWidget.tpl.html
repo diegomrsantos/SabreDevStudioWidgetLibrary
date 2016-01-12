@@ -1,0 +1,46 @@
+<div class="SDSLeadPriceChart panel panel-default" ng-show="ctrl.isAnyDataToDisplayAvailable()">
+
+    <div class="panel-heading text-center">
+        <h4 class="panel-title">Lead Prices</h4>
+    </div>
+
+    <div class="panel-body" ng-show="ctrl.isAnyDataToDisplayAvailable()">
+        <h5>Prices from <em>{{ctrl.lastSearchCriteriaAirports.departureAirport | cityAndAirportFullName}}</em> to <em>{{ctrl.lastSearchCriteriaAirports.arrivalAirport | cityAndAirportFullName}}</em>,
+            from <strong>{{ctrl.minDateAndPricePair.totalFareAmount | currency:ctrl.minDateAndPricePair.currency}}</strong> at <strong>{{ctrl.minDateAndPricePair.date.format('D MMM')}}</strong>
+        </h5>
+
+        <div>
+            <canvas ng-click="ctrl.chartClicked($event)"></canvas>
+        </div>
+
+    </div>
+
+    <div class="panel-footer">
+        <nav ng-show="ctrl.isAnyDataToDisplayAvailable()">
+            <!-- For navigation we could simplify much by reusing pager component from angular-ui, like we did in navigable calendar.
+                However, using pager component requires to have all navigable items (prices for all dates) all ready upfront.
+                This enforces getting all the data at the beginning.
+                With this approach of custom handling navigation, we can be doing calls to web service at the time of Next click,
+                which has its pros and cons, in comparison to the approach of getting all data upfront
+                    pros: call to get data only for first screen may be faster
+                    pros: we can call more accurate web service in the background, till user navigates to next items
+                    pros: we defer to the data service implementation how all data are fetched and when.
+                    cons: custom code instead of reuse
+                In case of this very data service, the call for all the data is done in web service anyway, so performance wise it does not matter here.
+            -->
+            <ul class="pager">
+
+                <li class="previous" ng-class="{'disabled SDSInactive': !ctrl.navigationState.prevLinkActive}">
+                    <a href="" ng-click="ctrl.onEarlierRequested()">EARLIER</a>
+                </li>
+
+                <li class="next" ng-class="{'disabled SDSInactive': !ctrl.navigationState.nextLinkActive}">
+                    <a href="" ng-click="ctrl.onLaterRequested()">LATER</a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+
+
+</div>

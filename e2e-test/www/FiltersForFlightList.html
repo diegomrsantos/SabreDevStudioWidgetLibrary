@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Flight List Instaflights</title>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../../widgets/stylesheets/SDSMain.css">
+
+    <style>
+        .container-fluid {
+            /*background: #a9a9a9;*/
+        }
+
+        #ItineraryListFilterPane {
+            vertical-align: top;
+            width: 20%;
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        #ItineraryList {
+            vertical-align: top;
+            background-color: inherit;
+            width: 75%;
+            display: inline-block;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="mainPageContainer">
+        <div style="max-width: 1200px; margin-left: 200px">
+            <itinerary-list id="ItineraryList" active-search="true"></itinerary-list>
+            <filters-panel id="ItineraryListFilterPane"></filters-panel>
+        </div>
+    </div>
+    <script async data-main="../../src/SabreDevStudioSDK" src="../../node_modules/requirejs/require.js"></script>
+</body>
+</html>

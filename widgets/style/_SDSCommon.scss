@@ -1,0 +1,147 @@
+@import "compass/css3";
+@import "compass/css3/images";
+
+$bootstrapPrimaryColor: #337ab7;
+
+$itemsSeparatingLineColor: #D2DDE4;
+$itemsSeparatingLineStyle: solid #D2DDE4 1px;
+
+.SDSTopLevelList > li  {
+  border-bottom: solid #D2DDE4 1px;
+  &:nth-child(odd) {
+    background-color: #F2F2F2;
+  }
+  &:hover {
+    background-color: #E2F0FF;
+  }
+}
+
+.SDSAirlineLogo {
+  border: none;
+  width: 22px;
+  height: 15px;
+  overflow: hidden;
+}
+
+.SDSShowDetailsLink {
+  @extend %SDSLink;
+}
+
+%SDSLink {
+  font-size: 10px;
+  text-decoration: none;
+  color: rgb(0, 136, 204);
+}
+
+.SDSToggleLink {
+  padding-bottom: 4px;
+}
+
+.SDSCheckboxToggled {
+  display: inline-flex;
+
+  // fix for titatoggle not presented correctly in bootstrap form-horizontal, see https://github.com/kleinejan/titatoggle/issues/5
+  .checkbox-slider--b input + span:after {
+    margin-top: 7px;
+  }
+  // resetting padding to have no padding after the toggle (by default there is padding, as by default it is used as checkbox. We use it as enumeration of two values, and will adjust padding for those two values */
+  .checkbox-slider--b input + span {
+    padding-left: 20px;
+  }
+  .SDSCheckboxToggledOffText {
+    padding-right: 5px;
+  }
+  .SDSCheckboxToggledOnText {
+    padding-left: 5px;
+  }
+}
+
+/* general class to add to all for all inactive/deactivated elements */
+.SDSInactive {
+  @include opacity(0.35);
+  pointer-events: none;
+}
+
+/* helper class, for use in javascript, to hide elements */
+.SDSHidden {
+  visibility: hidden;
+}
+
+.SDSInitiallyNotDisplayed {
+  display: none;
+}
+
+.SDSNoWrap {
+  white-space:nowrap;
+}
+
+.SDSWidget {
+
+  .SDSPaxNbrInput { //bumping up selector value to override bootstrap
+    // needed for FF and IE, otherwise this field far too long for one digit input
+    width: 5.5rem;
+  }
+
+  // Bootstrap default input fields unnecessarily long for dates
+  .SDSDateInput {
+    width: 14rem;
+  }
+
+  .SDSBadgeInfo, .panel-default>.panel-heading .badge.SDSBadgeInfo {
+    background-color: #3a87ad;
+  }
+
+}
+
+.SDSDisableLink {
+  pointer-events: none;
+}
+
+.SDSTopBuffer-xs {
+  margin-top: 1rem;
+}
+.SDSTopBuffer-sm {
+  margin-top: 2rem;
+}
+.SDSTopBuffer-md {
+  margin-top: 3rem;
+}
+
+.SDSBottomBuffer-xs {
+  margin-bottom: 1rem;
+}
+.SDSBottomBuffer-sm {
+  margin-bottom: 2rem;
+}
+.SDSBottomBuffer-md {
+  margin-bottom: 3rem;
+}
+
+.SDSPreferredAirlineSelect {
+
+  .ui-select-toggle {
+    width: 100%;
+    min-width: 200px;
+    max-width: 200px;
+  }
+  .ui-select-match-text {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.SDSHideOverflow {
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.SDSSearchInProgressUponClicked {
+  cursor: wait;
+}
+
+.SDSPaddingSmall {
+  padding-right: 0.2rem;
+  padding-left: 0.2rem;
+}

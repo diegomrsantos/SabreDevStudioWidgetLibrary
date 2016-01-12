@@ -1,0 +1,72 @@
+<div class="SDSWidget SDSResponsiveElement SDSInspirationalList">
+        <div class="panel panel-default" ng-show="ctrl.isAnyDataToDisplayAvailable()">
+
+            <div class="panel-heading text-center">
+                <h4 class="panel-title">Cheapest Flights To Destination</h4>
+            </div>
+
+            <div class="panel-body">
+
+                <ul class="list-unstyled SDSTopLevelList">
+                    <div class="SDS-row">
+                        <li ng-repeat="offerItem in ctrl.modelPricesToDestination.FareInfo">
+                            <div class="SDS-col-element-lg-6">
+                                <div class="SDSInspirationalTile">
+                                        <div class="SDS-row">
+                                            <div class="SDS-col-element-xs-4">
+                                                <ul class="list-inline list-unstyled">
+                                                    <li>
+                                                        <div ng-repeat="airline in offerItem.LowestFare.AirlineCodes" ng-if="$first"><!--WARN: only first airline shown -->
+                                                            <airline-logo airline-code="{{airline}}"></airline-logo>
+                                                            <strong>{{airline | airlineFullName}}</strong>
+                                                        </div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="SDS-col-element-xs-5">
+                                                <ul class="list-inline list-unstyled">
+                                                    <li>
+                                                        <div><strong>{{offerItem.OriginLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</strong></div>
+                                                    </li>
+                                                    <li>
+                                                        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
+                                                    </li>
+                                                    <li>
+                                                        <strong>{{ctrl.modelPricesToDestination.DestinationLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</strong>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <div class="SDS-col-element-xs-3">
+                                                <div class="pull-right">
+                                                    <small class="SDSPaddingSmall">from </small><strong>{{offerItem.LowestFare.Fare | currency:offerItem.CurrencyCode}}</strong>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <a class="pull-right" href=""
+                                                   popover-template="'DestinationPricerDetailsPopover'"
+                                                   popover-trigger="mouseenter"
+                                                   popover-placement="bottom"
+                                                   popover-append-to-body="true">Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </li>
+                    </div>
+                </ul>
+
+            </div>
+
+        </div>
+</div>
+
+<script type="text/ng-template" id="DestinationPricerDetailsPopover">
+    <ul class="list-inline list-unstyled">
+        <li>
+            <small>Departure {{offerItem.DepartureDateTime | makeMomentAndFormat:'ddd, DD MMM'}} from {{offerItem.OriginLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</small><!-- format: Sun, 05 Dec-->
+        </li>
+        <li>
+            <small>Return {{offerItem.ReturnDateTime | makeMomentAndFormat:'ddd, DD MMM'}} from {{ctrl.modelPricesToDestination.DestinationLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</small><!-- format: Sun, 05 Dec-->
+        </li>
+    </ul>
+</script>

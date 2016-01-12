@@ -1,0 +1,17 @@
+<div class="panel panel-default SDSTravelSeasonalityWidget" ng-show="ctrl.isAnyDataToDisplayAvailable()">
+
+    <div class="panel-heading text-center">
+        <h4 class="panel-title">Travel Seasonality</h4>
+    </div>
+
+    <div class="panel-body">
+        <h5>
+            Travel seasonality to <em>{{ctrl.lastSearchCriteriaAirports.arrivalAirport | cityAndAirportFullName}}</em>
+        </h5>
+
+        <div>
+            <canvas></canvas>
+        </div>
+    </div>
+
+</div>

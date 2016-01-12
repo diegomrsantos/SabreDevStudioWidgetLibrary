@@ -1,0 +1,187 @@
+<div>
+    <ul class="SDSLegList list-unstyled">
+        <li>
+            <div class="SDS-row">
+                <ul class="SDS-col-element-xxs-12 SDS-hidden-xs list-inline list-unstyled">
+                    <li>
+                        <airline-logo airline-code="{{itinerary.getAllMarketingAirlines()[0]}}"></airline-logo>
+                        <small>{{itinerary.getAllMarketingAirlines()[0] | airlineFullName}}</small>
+                        <small>and other airlines</small>
+                    </li>
+                </ul>
+                <ul class="SDS-col-element-xxs-9 SDS-visible-xs list-inline list-unstyled">
+                    <li ng-repeat="marketingAirline in itinerary.getAllMarketingAirlines()">
+                        <ul class="list-unstyled list-inline">
+                            <li><airline-logo airline-code="{{marketingAirline}}"></airline-logo></li>
+                            <li><small>{{marketingAirline | airlineFullName}}</small></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="SDS-col-element-lg-3 SDS-visible-lg list-inline list-unstyled text-right"
+                    popover-template="'ItineraryIconsLegendTemplate'"
+                    popover-trigger="mouseenter"
+                    popover-placement="bottom"
+                    popover-append-to-body="true">
+                    <li ng-if="itinerary.hasRedEyeFlight()" class="SDSIconRedEye"></li>
+                    <li ng-if="itinerary.hasShortConnection()" class="SDSIconHurryUpShortConnection"></li>
+                    <li ng-if="itinerary.hasLongConnection()" class="SDSIconLongConnection"></li>
+                    <li ng-if="itinerary.hasLowSeatsRemaining()" class="SDSIconFewSeatsLeft"></li>
+                </ul>
+                <!--<div class="clearfix"></div>-->
+            </div>
+        </li>
+        <li ng-repeat="leg in itinerary.legs" ng-init="legIndex = $index">
+            <div class="SDSLegSummary SDS-row">
+                <div class="SDS-col-element-xxs-4 SDS-col-element-md-4 SDS-col-element-lg-5">
+                    <span class="SDS-visible-xl-inline-block SDSTravelDateLong">{{leg.getLegDepartureDateTime().format('ddd, DD MMM')}}</span><!-- format: Sun, 05 Dec -->
+                    <span class="SDSTravelTime">{{leg.getLegDepartureDateTime().format('HH:mm')}}</span><!-- format: 14:34 -->
+                                    <span ng-class="{'bg-warning':leg.hasAirportChangeAtDeparture}">
+                                        <span class="badge SDSBadgeInfo">{{leg.getLegDepartureAirport()}}</span><span class="SDS-visible-xl-inline-block SDSFullAirportName">{{leg.getLegDepartureAirport() | cityAndAirportFullName}}</span>
+                                    </span>
+                </div>
+                <div class="SDS-col-element-xxs-1">
+                    <div class="SDSIconAirplaneArrow"></div>
+                </div>
+                <div class="SDS-col-element-xxs-4 SDS-col-element-md-4 SDS-col-element-lg-4">
+                    <span class="SDSTravelTime">{{leg.getLegArrivalDateTime.format('HH:mm')}}</span>
+                                    <span ng-class="{'bg-warning':leg.hasAirportChangeAtArrival}">
+                                        <span class="badge SDSBadgeInfo">{{leg.getLegArrivalAirport()}}</span><span class="SDS-visible-xl-inline-block SDSFullAirportName">{{leg.getLegArrivalAirport() | cityAndAirportFullName}}</span>
+                                    </span>
+                </div>
+                <div class="SDS-col-element-xxs-3 SDS-col-element-md-3 SDS-col-element-lg-2">
+                    <span>{{leg.getDuration() | humanizeMinutes }}</span>
+                                    <span class="SDS-visible-md-inline-block"><ng-pluralize count="leg.getNumberOfStops()" when="
+                                            {'0': 'Non-stop',
+                                             '1': '1 stop',
+                                             'other': '{} stops'}
+                                            "></ng-pluralize>
+                                    </span>
+                    <span ng-if="leg.hasConnection()">{{leg.getConnectionAirports() | stringJoiner:',':'(':')'}}</span>
+                </div>
+            </div>
+            <!-- on smaller screens show this when flight details are opened, after first leg -->
+                            <span ng-if="itinerary.hasChangeOfAirportsAtAnyStopover() && $first" class="SDS-hidden-lg ng-hide SDSItineraryFlightDetails text-warning">
+                                Please note: Trip has change of airports at stopover. Please inspect the airports carefully.
+                            </span>
+                            <span ng-if="itinerary.departureAndArrivalDifferentForComplexTravel() && $first" class="SDS-hidden-lg ng-hide SDSItineraryFlightDetails text-warning">
+                                Please note: Trip departure and return airports are not the same. Please inspect the airports carefully.
+                            </span>
+            <ul class="list-group ng-hide SDSItineraryFlightDetails">
+                <li class="list-group-item" ng-repeat-start="flight in leg.segments" ng-init="segmentIndex = $index">
+                    <ul class="list-unstyled">
+                        <!--<li>-->
+                        <!--{{flight.duration | humanizeMinutes}}-->
+                        <!--</li>-->
+                        <li>
+                            <div class="SDS-row">
+                                <strong>
+                                    <airline-logo airline-code="{{flight.marketingAirline}}"></airline-logo>
+                                    {{flight.marketingAirline}} {{flight.marketingFlightNumber}} {{flight.marketingAirline | airlineFullName}}
+                                </strong>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="SDS-row SDSFlightDepartureOrArrival">
+                                <div class="SDS-col-element-sm-4">
+                                    <span class="SDSLabelForTravelDate">Depart:</span>
+                                    {{flight.departureDateTime.format('ddd, DD MMM HH:mm')}}
+                                </div>
+                                <div class="SDS-col-element-sm-8">
+                                    <span class="SDSAirport badge SDSBadgeInfo">{{flight.departureAirport}}</span>
+                                    <span class="SDSFullAirportName">{{flight.departureAirport | cityAndAirportFullName}}, {{flight.departureAirport | airportCountry}}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="SDS-row SDSFlightDepartureOrArrival">
+                                <div class="SDS-col-element-sm-4">
+                                    <span class="SDSLabelForTravelDate">Arrive:</span>
+                                    {{flight.arrivalDateTime.format('ddd, DD MMM HH:mm')}}
+                                </div>
+                                <div class="SDS-col-element-sm-8">
+                                    <span class="SDSAirport badge SDSBadgeInfo">{{flight.arrivalAirport}}</span>
+                                    <span class="SDSFullAirportName">{{flight.arrivalAirport | cityAndAirportFullName}}, {{flight.arrivalAirport | airportCountry}}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="SDS-row">
+                                <div class="SDS-col-element-lg-2">
+                                    <small>{{flight.equipment | aircraftName}}</small>
+                                </div>
+                                <div class="SDS-col-element-lg-2 SDS-col-element-xl-1">
+                                    <small>{{itinerary.getSeatsRemaining(legIndex, segmentIndex)}} seats left</small>
+                                </div>
+                                <div class="SDS-col-element-lg-1 SDS-col-element-xl-1">
+                                    <small>{{itinerary.getCabin(legIndex, segmentIndex) | cabin}}</small>
+                                </div>
+                                <div class="SDS-col-element-lg-2 SDS-col-element-xl-1" ng-if="itinerary.getMeals(legIndex, segmentIndex)">
+                                    <small>Meal: {{itinerary.getMeals(legIndex, segmentIndex) | meal}}</small>
+                                </div>
+                                <div class="SDS-col-element-lg-3 SDS-col-element-xl-2" ng-if="itinerary.getBaggageAllowance(legIndex, segmentIndex)">
+                                    <small>Baggage allowance: {{itinerary.getBaggageAllowance(legIndex, segmentIndex) | baggageAllowance}}</small>
+                                </div>
+                                <div class="SDS-col-element-lg-2 SDS-col-element-xl-2" ng-if="itinerary.getBrandsMatchedToFlight(legIndex, segmentIndex).length > 0">
+                                    <small>Brands matched: {{itinerary.getBrandsMatchedToFlight(legIndex, segmentIndex) | stringJoiner}}
+                                    </small>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li ng-repeat-end ng-if="!$last" class="list-group-item">
+                    Connection {{leg.getConnectionTimeMinutes(segmentIndex) | humanizeMinutes}}
+                </li>
+            </ul>
+        </li>
+        <li>
+            <div ng-if="itinerary.hasAnyBrands()" class="ng-hide SDSItineraryBrandDetails">
+               <ng-include src="'../widgets/view-templates/widgets/ItineraryBrandDetails.tpl.html'"></ng-include>
+            </div>
+        </li>
+        <span ng-if="itinerary.hasChangeOfAirportsAtAnyStopover()" class="SDS-visible-lg text-warning">
+            Please note: Trip has change of airports at stopover. Please inspect the airports carefully.
+        </span>
+        <span ng-if="itinerary.departureAndArrivalDifferentForComplexTravel()" class="SDS-visible-lg text-warning">
+            Please note: Trip departure and return airports are not the same. Please inspect the airports carefully.
+        </span>
+    </ul>
+    <div class="SDSPriceSummary">
+        <div class="pull-left">
+            <a href="" class="SDS-hidden-lg SDSItineraryShowPriceDetails SDSItineraryShowFlightDetails SDSItineraryHideWhenFlightDetailsShown">Show Details</a>
+            <a href="" class="SDS-hidden-lg ng-hide SDSItineraryHidePriceDetails SDSItineraryHideFlightDetails SDSItineraryFlightDetails">Hide Details</a>
+            <a href="" class="SDS-visible-lg SDSItineraryToggleFlightDetails">Flight Details</a>
+            <a href="" class="SDS-visible-lg SDSItineraryToggleBrandDetails" ng-show="itinerary.hasAnyBrands()">Brand Details</a>
+        </div>
+        <div>
+            <ul class="list-unstyled pull-right">
+                <li>Total price: <strong >{{itinerary.totalFareAmountWithCurrency.amount | currency:itinerary.totalFareAmountWithCurrency.currency}}</strong></li>
+                <li>
+                    <a href="" class="SDS-visible-lg ng-show SDSItineraryTogglePriceDetails">Price Details</a>
+                </li>
+                <li class="SDSItineraryPriceDetails ng-hide SDSItineraryTogglePriceDetails">Base fare: {{itinerary.baseFareAmount | currency:itinerary.baseFareCurrency}}</li>
+                <li class="SDSItineraryPriceDetails ng-hide SDSItineraryTogglePriceDetails">Taxes: {{itinerary.totalTaxAmount | currency:itinerary.totalTaxCurrency}}</li>
+            </ul>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="ng-hide SDSItineraryFlightDetails SDSTopBuffer-xs SDS-hidden-md"></div>
+        <button type="button" disabled class="ng-hide SDSItineraryFlightDetails SDSCheckoutButton btn btn-primary btn-sm pull-right SDS-hidden-md">Select</button>
+
+        <div class="SDSTopBuffer-xs SDS-visible-md"></div>
+        <button type="button" disabled class="SDSCheckoutButton btn btn-primary btn-sm pull-right SDS-visible-md">Select</button>
+    </div>
+</div>
+
+<script type="text/ng-template" id="ItineraryIconsLegendTemplate">
+    <dl>
+        <dt ng-if="itinerary.hasRedEyeFlight()"><span class="SDSIconRedEye"></span></dt>
+        <dd ng-if="itinerary.hasRedEyeFlight()">Red-eye flight</dd>
+        <dt ng-if="itinerary.hasShortConnection()"><span class="SDSIconHurryUpShortConnection"></span></dt>
+        <dd ng-if="itinerary.hasShortConnection()">Short connection, hurry up</dd>
+        <dt ng-if="itinerary.hasLongConnection()"><span class="SDSIconLongConnection"></span></dt>
+        <dd ng-if="itinerary.hasLongConnection()">Long connection, long wait time at airport</dd>
+        <dt ng-if="itinerary.hasLowSeatsRemaining()"><span class="SDSIconFewSeatsLeft"></span></dt>
+        <dd ng-if="itinerary.hasLowSeatsRemaining()">Few seats left</dd>
+    </dl>
+</script>

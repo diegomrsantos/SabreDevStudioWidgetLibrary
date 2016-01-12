@@ -1,0 +1,18 @@
+<div class="SDSFareForecastWidget panel panel-default" ng-if="isAnyDataToDisplayAvailable() && showRecommendation()">
+
+    <div class="panel-body">
+
+        <strong>Advice: </strong>
+        <strong ng-class="{SDSRecommendationBuy: fareForecast.recommendation=='buy', SDSRecommendationWait: fareForecast.recommendation=='wait', SDSRecommendationUnknown: fareForecast.recommendation=='unknown'}">
+            {{fareForecast.recommendation | uppercase}}
+        </strong>
+
+        <div ng-switch="fareForecast.recommendation">
+            <p ng-switch-when="buy">Prices may rise within 7 days</p>
+            <p ng-switch-when="wait">Prices may drop within 7 days</p>
+            <p ng-switch-when="unknown">Cannot predict prices within 7 days</p>
+        </div>
+
+    </div>
+
+</div>

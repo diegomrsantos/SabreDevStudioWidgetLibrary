@@ -1,0 +1,79 @@
+<ul class="list-group">
+    <li class="list-group-item">
+        <table class="SDSTable table table-bordered table-condensed ">
+            <thead>
+            <tr>
+                <th class="text-center">Brands</th>
+                <th class="text-center">
+                    {{itinerary.itineraryPricingInfo.summaries.uniqueBrandsMatchedToAllFlights | stringJoiner}}
+                    <small><em>(main fare)</em></small>
+                </th>
+                <th class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    {{brand.summaries.uniqueBrandsMatchedToAllFlights | stringJoiner}}
+                    <span ng-if="!brand.fareReturned">
+                        Fare not returned for brands. {{brand.getTranslatedFareStatus()}}
+                    </span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="text-center">Total fare</td>
+                <td class="text-center"><strong>{{itinerary.totalFareAmountWithCurrency.amount | currency:itinerary.totalFareAmountWithCurrency.currency}}</strong></td>
+                <td class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    <strong>{{brand.fareAmounts.totalFare.amount | currency: brand.fareAmounts.totalFare.currency}}</strong>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-center">Cabins</td>
+                <td class="text-center">
+                    {{itinerary.itineraryPricingInfo.summaries.uniqueCabins | forEachApplyFilter:'cabin' |  stringJoiner:'/'}}
+                </td>
+                <td class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    {{brand.summaries.uniqueCabins | forEachApplyFilter:'cabin' |  stringJoiner}}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-center">Ticket refundable</td>
+                <td class="text-center">{{itinerary.itineraryPricingInfo.nonRefundableIndicator | ticketRefundability}}</td>
+                <td class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    {{brand.nonRefundableIndicator | ticketRefundability}}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-center">OB Fees</td>
+                <td class="text-center">
+                    <span ng-repeat="obFee in itinerary.itineraryPricingInfo.OBFees">{{obFee.amount | currency: obFee.currency}}</span>
+                </td>
+                <td class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    <span ng-repeat="obFee in brand.OBFees">{{obFee.amount | currency: obFee.currency}}</span>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-center">Baggage allowance</td>
+                <td class="text-center">
+                    {{itinerary.itineraryPricingInfo.summaries.uniqueBaggageAllowance | forEachApplyFilter:'baggageAllowance' | stringJoiner:'/'}}
+                </td>
+                <td class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    {{brand.summaries.uniqueBaggageAllowance | forEachApplyFilter:'baggageAllowance' | stringJoiner:'/'}}
+                </td>
+            </tr>
+
+            <tr>
+                <td class="text-center">Meals</td>
+                <td class="text-center">
+                    {{itinerary.itineraryPricingInfo.summaries.uniqueMeals | forEachApplyFilter:'meal' | stringJoiner:'/'}}
+                </td>
+                <td class="text-center" ng-repeat="brand in itinerary.additionalFaresPricingInfos">
+                    {{brand.summaries.uniqueMeals | forEachApplyFilter:'meal' | stringJoiner:'/'}}
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </li>
+</ul>

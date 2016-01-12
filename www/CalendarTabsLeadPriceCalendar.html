@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calendar Tabs Display</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+</head>
+<body>
+
+<div id="mainPageContainer">
+    <partial command="include('partials/navigation.html')"></partial>
+    <div class="embeddedWidget" data-search-form selectable-airports-for-this-pos-only="1"></div>
+    <error-display class="embeddedWidget"></error-display>
+    <div class="row">
+        <div class="col-lg-5">
+            <calendar-tabs class="embeddedWidget" tabs-shown="5" active-search-web-service="leadPriceCalendar"></calendar-tabs>
+            <!--<calendar-tabs tabs-shown="5" active-search-web-service="leadPriceCalendar"-->
+                           <!--origin="DFW" destination="LAX" departure-date="2015-11-01" return-date="2015-11-10"-->
+                           <!--do-not-show-prev-next-month-days="true">-->
+            <!--</calendar-tabs>-->
+            <!--<calendar-tabs tabs-shown="8" active-search-web-service="leadPriceCalendar"-->
+                           <!--origin="DFW" destination="NYC" departure-date="2015-10-01" return-date="2015-10-10"-->
+                           <!--do-not-show-prev-next-month-days="true">-->
+            <!--</calendar-tabs>-->
+        </div>
+        <div class="col-lg-7">
+            <itinerary-list class="embeddedWidget" id="ItineraryList"></itinerary-list>
+        </div>
+    </div>
+</div>
+<script data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+
+</body>
+</html>

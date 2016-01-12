@@ -1,0 +1,17 @@
+<div>
+    <!--<span class="top-left">-->
+        <!--{{minMaxConstraints.min | minutesInDayToTimeOfDay:true}}-->
+    <!--</span>-->
+
+    <!--<span class="pull-right">-->
+        <!--{{minMaxConstraints.max | minutesInDayToTimeOfDay:true}}-->
+    <!--</span>-->
+
+    <div range-slider
+         min="minMaxConstraints.min" max="minMaxConstraints.max" step="{{::step}}"
+         model-min="currentSelection.min" model-max="currentSelection.max"
+         prevent-equal-min-max="true" show-values="true" attach-handle-values="true"
+         filter="minutesInDayToTimeOfDay" filter-options="true"
+         on-handle-up="permittedValuesChanged()">
+    </div>
+</div>

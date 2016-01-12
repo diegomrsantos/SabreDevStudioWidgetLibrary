@@ -1,0 +1,46 @@
+{
+    "COMMENT_": "for all options see https://github.com/jrburke/r.js/blob/master/build/example.build.js"
+  , "name": "../../node_modules/almond/almond"
+  , "mainConfigFile": "build-js/main/SabreDevStudioSDK.js"
+  , "out": "dist/widgets/SDSWidgets.min.js"
+  , "paths": {
+      "angular": "../../bower_components/angular/angular.min"
+    , "widgets/templateCacheCharger": "../../build/ngtemplates/templateCacheCharger"
+    , "widgets/version": "../../build/version/version"
+    , "COMMENT_": "skipped lodash custom builds to save build time"
+    , "COMMENT_lodash": "../../build/lodash/lodash.custom.build"
+  }
+  , "pragmas": {
+      "appBuildExclude": true,
+      "excludeWhenBuiltAsLibraryOnly": false
+  }
+  , "include": ["SabreDevStudioSDK"]
+  , "insertRequire": ["SabreDevStudioSDK"]
+  , "wrap" : {
+    "startFile": "requirejs.wrap.start",
+    "endFile" : "requirejs.wrap.end"
+  }
+  , "mangle": true
+  , "optimize": "uglify2"
+  , "uglify2": {
+      "compress": {
+        "screw_ie8": true,
+        "sequences": true,
+        "properties": true,
+        "dead_code": true,
+        "drop_debugger": true,
+        "comparisons": true,
+        "conditionals": true,
+        "evaluate": true,
+        "booleans": true,
+        "loops": true,
+        "unused": true,
+        "hoist_funs": true,
+        "if_return": true,
+        "join_vars": true,
+        "cascade": true,
+        "negate_iife": true,
+        "drop_console": true
+      }
+  }
+}

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <title>Behavior of filtering panes from based on major OTAs. It does not mean it is implemented this way. Subset of it is implemented.</title>
+</head>
+<body>
+<p>
+    FiltersPaneWidget is a container holding specific filters, like filter for airlines or filter for flight departure.
+</p>
+<p>
+    All filters are instances of objects of two possible types:
+    <dl>
+        <dt>RangeFilter</dt><dd>for filtering properties that are continuous in nature, like price, or flight time (unless you want to classify them in ranges)</dd>
+        <dt>DiscreteValuesFilter</dt><dd>for filtering properties that are discrete values, like airline or number of stops</dd>
+    </dl>
+</p>
+
+<h3>Presentation of range filters</h3>
+<ul>
+    <li>For price filter also current min and max are presented - above (not only min cap and max cap below). the values are dynamically updates as we slide.
+        The itinerary list is updated only when sliding finishes</li>
+    <li>There is "Flight times" filter, with one slider per leg, for departure or arrival time (flip switch for leaving and arriving)</li>
+</ul>
+
+
+<h3>Presentation of discrete filters</h3>
+<ul>
+    <li>All items have From {price} to the right (select value, min(price) .. group by price). In header there is filter name and "From"</li>
+    <li>sometimes, after filter value, there is count in brackets</li>
+    <li>number of stops has "Non-stop" label for 0 stops</li>
+    <li>when a filter has very many items, like airlines, then only top N are listed, and then there is "Show all" link (which then changes into "Show less")</li>
+    <li>Filters for airports is collapsed on start: 2 filters, for arrival and departure</li>
+    <li>departure time may be presented as 3 ranges (morning, afternoon,...) and not as slider</li>
+</ul>
+
+
+<h3>Rules for discrete values filters</h3>
+<ul>
+    <li>on start, for filters with many values, like airlines filter, have first special value "All", which s checked, all other are unchecked.
+    For filters with few items items, like number of stops, there is no "All" pseudo value, and all are checked</li>
+    <li>on discrete values selection filter, when the last checked value is unchecked (which would result in no checkboxes checked), then "All" checkbox (within this filter) becomes checked.
+    Similarly, for number of stops it is not possible to uncheck all, as it eliminates all options</li>
+</ul>
+
+<h3>Rules for range filters</h3>
+<ul>
+    <li>When range filter is changed, like price, then other filters selectable values are not changed. They stay the same and also their "price from" stays the same (based all itineraries in the set).
+    The same for discrete filters</li>
+</ul>
+
+<h3>Collaboration protocol between Itinerary presenting widget, ItineraryList in particular, and FiltersPanel</h3>
+
+1. includeInStatisticsRequest (with props specifications)
+2. upon it the itinerariesList includes these specs in its already registered stats to calculate. Additionally it recalculates stats and broadcasts current stats.
+
+Hardcode property names in some service available for both filtersPanel and itineraries. Or in constant.
+
+Initially filters not configured and all state disabled.
+Only after first statistics broadcast, the filters set their initial state.
+
+<ol>
+    <li>FiltersPanel to set its filters bounds to some initial values, needs to get these values from ItineraryList. So FiltersPanel broadcasts event for statistics.
+        This event contains required statistics descriptions (like property names to calculate the statistics on.</li>
+    <li>ItineraryList, on every itineraries list update (on any change of itineraries in the model), broadcasts events with current itineraries statistics - these will be constraints for filters</li>
+    <li>FiltersPanel, upon receiving new statistics, resets bounds for all its children filters</li>
+    <li>upon change to any children filters of the FiltersPanel, the FiltersPanel collects current filtering criteria from all children, creates list of filtering functions (predicates) and broadcasts event with those predicates</li>
+    <li>ItineraryList, upon receiving new predicates, applies those predicates to its itineraries model. After update, again actions from point 1. are executed.</li>
+</ol>
+</body>
+</html>

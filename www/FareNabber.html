@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fare Nabber form</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+</head>
+<body>
+
+<div id="mainPageContainer">
+    <partial command="include('partials/navigation.html')"></partial>
+    <div>Flight list goes here...</div>
+    <!-- when putting widgets together pass as cutoff like 80% of the lowest fare -->
+    <button type="button" id="FareNabber" class="btn btn-primary"
+            data-fare-nabber data-origin="SFO" data-destination="DFW" data-departure-date="2016-11-01" data-return-date="2016-12-01"
+            passenger-type="ADT"
+            passenger-count="1"
+            data-maximum-acceptable-price="143.23" data-maximum-acceptable-price-currency="USD">
+        Subscribe for price alerts
+    </button>
+    <error-display class="embeddedWidget"></error-display>
+    <div>Other page content</div>
+</div>
+
+<script async data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+</body>
+</html>

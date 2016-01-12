@@ -1,0 +1,28 @@
+<div>
+    <span class="input-sm control-label">
+        <ng-transclude></ng-transclude>
+    </span>
+    <div class="btn-group btn-group-sm">
+        <label class="btn btn-primary" ng-repeat="los in predefinedLengthOfStayDays" ng-model="selectedPredefinedLengthOfStayDays.value" btn-radio="{{los}}">
+            {{los | humanizeDurationDays}}
+        </label>
+    </div>
+    <div>
+        <div class="input-sm control-label">Set other duration values</div>
+        <ul class="list-unstyled list-inline">
+            <li>
+                <label for="SDSDurationMin" class="input-sm control-label">
+                    Min days
+                </label>
+                <input type="number" class="form-control SDS-form-inline-exclude input-sm SDSNumberInput2Digits" min="1" max="60" id="SDSDurationMin" ng-model="lengthOfStay.minDays" ng-value="lengthOfStay.minDays">
+            </li>
+
+            <li>
+                <label for="SDSDurationMax" class="input-sm control-label">
+                    Max days
+                </label>
+                <input type="number" class="form-control SDS-form-inline-exclude input-sm SDSNumberInput2Digits" min="1" max="60" id="SDSDurationMax" ng-model="lengthOfStay.maxDays" ng-value="lengthOfStay.maxDays">
+            </li>
+        </ul>
+    </div>
+</div>

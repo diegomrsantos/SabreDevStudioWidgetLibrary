@@ -1,0 +1,15 @@
+<div class="panel panel-default" ng-if="anyErrorPresent()">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            Service errors
+        </h4>
+    </div>
+    <div class="panel-body">
+        No results found for {{lastSearchCriteriaAirports.departureAirport | cityAndAirportFullName}} to {{lastSearchCriteriaAirports.arrivalAirport | cityAndAirportFullName}}
+        <div class="well well-sm">
+            <ul>
+                <li ng-repeat="error in errors track by $index"><p class="text-danger">{{error}}</p></li>
+            </ul>
+        </div>
+    </div>
+</div>

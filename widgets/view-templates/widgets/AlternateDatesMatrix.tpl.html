@@ -1,0 +1,75 @@
+<div class="SDSAlternateDatesMatrixWidget panel panel-default" ng-if="isAnyDataToDisplayAvailable()">
+
+    <div class="panel-heading text-center">
+        <h4 class="panel-title">Alternate Dates Lead Fares</h4>
+    </div>
+
+    <div class="panel-body">
+
+        <div class="table-responsive">
+            <table class="SDSTable table table-bordered table-condensed" ng-if="isRoundTripTravel">
+
+                <caption>Cheapest options for nearby departure and return dates for <em>{{departureAirport | cityAndAirportFullName}}</em> to <em>{{arrivalAirport| cityAndAirportFullName}}</em></caption>
+
+                <thead>
+                    <tr class="text-info">
+                        <th></th><!-- empty cell to match first column with departure dates -->
+                        <th ng-repeat="returnDate in requestedReturnDates">
+                            {{returnDate.format('ddd D MMM')}}<!-- Mon 1 Sep -->
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr ng-repeat="requestedDepartureDate in requestedDepartureDates">
+                        <th class="text-info"><!-- first columns with departure dates -->
+                            {{requestedDepartureDate.format('ddd D MMM')}}<!-- Mon 1 Sep -->
+                        </th>
+                        <td ng-repeat="requestedReturnDate in requestedReturnDates"
+                            ng-init="leadFareForDates = altDatesPriceMatrix.getLeadFareForTravelDates(requestedDepartureDate, requestedReturnDate)"
+                            class='SDSCalendarCell'
+                            ng-class="{'bg-info': isCentralRequestedDate(requestedDepartureDate, requestedReturnDate)}">
+                                <div class='SDSCalendarCellPrice SDSPriceTier-{{day.priceTier}}'>
+                                    {{leadFareForDates.price | currency:leadFareForDates.currency}}
+                                </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+        <div class="table-responsive">
+            <table class="SDSTable table table-bordered table-condensed" ng-if="isOneWayTravel">
+
+                <caption>Cheapest options for nearby departure dates for <em>{{departureAirport | cityAndAirportFullName}}</em> to <em>{{arrivalAirport| cityAndAirportFullName}}</em></caption>
+
+                <thead>
+                    <tr class="text-info">
+                        <th ng-repeat="requestedDepartureDate in requestedDepartureDates">
+                            {{requestedDepartureDate.format('ddd D MMM')}}<!-- Mon 1 Sep -->
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td ng-repeat="requestedDepartureDate in requestedDepartureDates"
+                            ng-init="leadFareForDate = altDatesPriceMatrix.getLeadFareForTravelDate(requestedDepartureDate)"
+                            class='SDSCalendarCell'
+                            ng-class="{'bg-info': isCentralRequestedDate(requestedDepartureDate)}">
+                                <div class='SDSCalendarCellPrice SDSPriceTier-{{day.priceTier}}'>
+                                    {{leadFareForDate.price | currency:leadFareForDate.currency}}
+                                </div>
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+

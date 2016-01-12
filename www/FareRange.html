@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fare Range</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+</head>
+<body>
+
+<div id="mainPageContainer">
+    <partial command="include('partials/navigation.html')"></partial>
+    <search-form
+            class="embeddedWidget"
+            hide-fields="ADTPaxNumber,DirectFlightsOnly,IsPlusMinus3DaysFlexible,PreferredAirline,PreferredCabin"
+            selectable-airports-for-this-pos-only="1"
+            selectable-airports-dictionary="fareRange">
+    </search-form>
+
+    <error-display class="embeddedWidget"></error-display>
+    <fare-range class="embeddedWidget fareRangeWidget"></fare-range>
+    <!-- see also with specifying current lowest fare -->
+    <!--<fare-range data-origin="FRA" data-destination="BKK" data-departure-date="2015-10-27" data-return-date="2015-11-10" data-current-lowest-fare="400" data-current-lowest-fare-currency="USD"></fare-range>-->
+
+</div>
+<script async data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+</body>
+</html>

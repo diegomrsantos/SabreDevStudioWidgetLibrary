@@ -1,0 +1,5 @@
+<input type="text" placeholder="City or airport" autocomplete="off" ng-model="airport"
+       ng-pattern="/.+object.+/" data-comment-for-ng-pattern="it is not like .*[A-Z]{3}.*, because typeahead filter is passing objects, not strigified objects. Also we want to make customer select from the typeahed suggestions, not type 3 letter codes - the controller expects the object from typeahead"
+       typeahead="airport as (airport | airportNameWithIATACode) for airport in airports | filter:$viewValue | airportNameBestSuggestionComparator:$viewValue | limitTo:30"
+       typeahead-min-length="2"
+       typeahead-wait-ms="50">

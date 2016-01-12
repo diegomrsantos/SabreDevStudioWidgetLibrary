@@ -1,0 +1,20 @@
+@import "SDSCommon";
+@import "SDSPriceTiered";
+
+.SDSTable {
+  border-collapse: separate;
+  border-spacing: 0.1rem;
+  table-layout: fixed; // this is to avoid table to overflow outside of containing div
+}
+
+.SDSCalendarCellPrice {
+  @extend %SDSPriceTiered;
+  white-space: nowrap;
+}
+
+.SDSCalendarCellContent {
+  // explicit setting of cell height is needed for the cases when all TD of one table row (one week) does not have any prices. Then such row would be smaller than others
+  height: 5rem;
+}
+
+

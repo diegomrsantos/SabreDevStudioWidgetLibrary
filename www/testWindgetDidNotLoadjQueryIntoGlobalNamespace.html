@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--<link href="../node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">-->
+
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/customerMainStyle.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSCalendar.css">
+
+    <title>Calendar Search</title>
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="CalendarSearchForm">
+        Specify your travel dates
+        <form>
+            <label>From<input type="text" autocomplete="false" pattern="[A-Z]{3}" required autofocus></label>
+            <label>To<input type="text" autocomplete="false" pattern="[A-Z]{3}" required></label>
+            <input type="submit" value="Search cheap flights" class="startSearch">
+        </form>
+    </div>
+
+    <div id="CalendarSearchResults"></div>
+    <script>
+        if (typeof $ === 'undefined') {
+            console.log("$ undefined");
+        }
+        if (typeof jQuery === 'undefined') {
+            console.log("jQuery undefined");
+        }
+    </script>
+    <div><p>rendering continues..</p></div>
+    <div id="CalendarSearchResults2"></div>
+</div>
+
+<!-- this snippet must be placed after any customer use of SDK. In particular it may be placed immediately after customer configuration,
+may be in the bottom, may be async or deferred.-->
+<!--<script type="text/javascript" src="../build-js/main/SabreDevStudioSDK.js"></script>-->
+<script data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+<script>
+    if (typeof $ === 'undefined') {
+        console.log("$ undefined");
+    }
+    if (typeof jQuery === 'undefined') {
+        console.log("jQuery undefined");
+    }
+</script>
+</body>
+</html>

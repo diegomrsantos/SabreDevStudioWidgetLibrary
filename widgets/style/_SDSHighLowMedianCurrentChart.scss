@@ -1,0 +1,44 @@
+@import "SDSCommon";
+
+$dataLineColor: #000000;
+$legendLineColor: #000000;
+
+svg.SDSHighLowMedianCurrentChart {
+
+  width: 350px;
+  height: 150px;
+
+  .SDSHLMCChartMainBar {
+    fill:$bootstrapPrimaryColor;
+  }
+
+  .SDSHLMCChartMainBarMarkerCircle > circle {
+    stroke: none;
+    fill: $legendLineColor;
+  }
+
+  line.SDSHLMCChartPointerLine {
+    stroke: $legendLineColor;
+    stroke-width:1;
+    marker-start: url(#markerCircle);
+  }
+
+  path.SDSHLMCChartPointerLine {
+    stroke: $legendLineColor;
+    fill:none;
+    marker-start: url(#markerCircle);
+  }
+
+  .SDSHLMCChartDataLine {
+    stroke: $dataLineColor;
+    stroke-width:1.5;
+  }
+
+  text.SDSHLMCChartDataLegend {
+    font-size: 0.8em;
+  }
+
+  text.SDSHLMCChartDataLegend > tspan {
+    alignment-baseline: middle;
+  }
+}

@@ -1,0 +1,25 @@
+<div class="panel panel-default" ng-if="isAnyDataToDisplayAvailable()">
+
+    <div class="panel-heading text-center">
+        <h4 class="panel-title">Lead Prices Calendar</h4>
+    </div>
+
+    <div class="panel-body">
+
+        <div ng-if="numberOfMonths > 1">
+            <tabset type="pills">
+                <tab ng-repeat="month in calendar.months"
+                     heading="{{month.monthStartDate.format('MMM')}} {{month.monthLeadPrice | currency:month.monthLeadPriceCurrency}}"
+                     disable="month.noPricesFound"
+                     active="monthsDisplayStates[month.monthStartDate]"><!-- Jan Feb ... Nov Dec --><!-- warn: this variable/array needs to be writable, as tabs directive will be reflecting in it the state of given tabs -->
+                        <ng-include src="'../widgets/view-templates/widgets/CalendarWidgetOneMonth.tpl.html'"></ng-include>
+                </tab>
+            </tabset>
+        </div>
+
+        <div ng-if="numberOfMonths == 1" ng-init="month = calendar.months[0]">
+            <h5 class="text-center">{{month.monthStartDate.format('MMM YYYY')}} from {{month.monthLeadPrice | currency:month.monthLeadPriceCurrency}}</h5>
+            <ng-include src="'../src/view-templates/widgets/CalendarWidgetOneMonth.tpl.html'"></ng-include>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+<p>
+    <input type="text" class="form-control" autocomplete="off"
+           ng-disabled="isDisabled == 'true'"
+           ng-required="required"
+           datepicker-popup="{{::dateFormat}}"
+           min-date={{::minDate}}
+           is-open="isDatePickerOpened"
+           ng-model="date"
+           ng-change="onDateChange()"
+           ng-click="openDatePicker($event)">
+    <!-- bug in NG 1.3 with not formatting initial date value: http://stackoverflow.com/questions/26188956/angular-ui-datepicker-initial-state-of-datepicker-not-formatted-per-datepicker-p, fixed in 1.4 -->
+    <span class="input-group-btn">
+        <button type="button"
+                ng-disabled="isDisabled == 'true'"
+                class="btn btn-default"
+                ng-click="openDatePicker($event)">
+            <i class="glyphicon glyphicon-calendar"></i>
+        </button>
+    </span>
+</p>
