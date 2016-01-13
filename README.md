@@ -1,10 +1,10 @@
 ## Project goal
-Javascript widgets for Sabre Dev Studio web services (SDS) were created in order to:
+Javascript widgets for Sabre Dev Studio REST APIs web services were created in order to:
 
-1. create a demo page, build from the widgets, to present functionality of SDS
+1. create a demo page, build from the widgets, to present functionality of Sabre REST APIs
 2. provide widgets that can be embedded on Sabre customer pages (OTA, 3rd party developers)
-3. create reusable Javascript components that could be used by third party developers while integrating with SDS.
-4. provide demonstration code how SDS services may be consumed
+3. create reusable Javascript components that could be used by third party developers while integrating with Sabre REST APIs.
+4. provide demonstration code how Sabre Dev Studio REST APIs services may be consumed
 
 ## Dependencies
 Main dependencies
@@ -71,38 +71,38 @@ $timeout(function () {
 2. One widget directive may depend on other directives, which are called partials.
 3. Every widget is represented by one file in `src/widgets` directory, or a subdirectory in that directory.
    Typically one widget consists of the definition of the directive representing it (and its controller, private functions). They constitute the Controller in MVC model.
-4. Widgets, to get data from SDS, are calling designated angular services, so called _data services_.
-   The responsibility of data services is to provide higher level business abstraction (domain objects) of data available in SDS.
+4. Widgets, to get data from Sabre REST APIs, are calling designated angular services, so called _data services_.
+   The responsibility of data services is to provide higher level business abstraction (domain objects) of data available in Sabre REST APIs.
    For example to return Air Shopping itineraries for given day or return lowest fares per given date range.
    Data Services and all layers below constitute the model in MVC. More on data service in [next section](#DataServicesFlowDetails).
-5. SDS web services themselves (called by the data services) are represented by angular resources. The resources definitions, for all web services, are in the `WebServicesResourceDefinitions.js` file.
-    Most of the resources are of GET type (as the SDS web services).
-    All SDS services responses are cached, either by Angular caching mechanism available in resource or by a custom mechanism.
+5. Sabre Dev Studio REST web services themselves (called by the data services) are represented by angular resources. The resources definitions, for all web services, are in the `WebServicesResourceDefinitions.js` file.
+    Most of the resources are of GET type (as the Sabre Dev Studio web services).
+    All Sabre REST web services responses are cached, either by Angular caching mechanism available in resource or by a custom mechanism.
     Custom caching mechanism (for details see the `CachingDecorator` in ``WebServicesResourceDefinitions.js`) is needed because some Sabre Dev Studio services have quite complex request schema
     and are so exposed as POST (not GET) webservices. And Angular does not offer caching of POST web services.
     Those POST webservices are wrapped in the resource and exposed thru custom `sendRequest` method.
 
-    Please note **SDS web services are not called by the widgets directly**, but the widgets are calling a special bridge, and only that bridge calls the SDS services. See details in the [Security](#Security) section.
+    Please note **Sabre Dev Studio REST web services are not called by the widgets directly**, but the widgets are calling a special bridge, and only that bridge calls the Sabre web services. See details in the [Security](#Security) section.
 
 6. Widget views: the Views are Angular templates. Typically there is one view per widget. In case of more complex views, or when common view components (partials) were identified,
 the widgets views include other, partial views. The other, partial views are also Angular directives.
 
 
 ### <a name="DataServicesFlowDetails"></a> Data services flow details
-There are multiple relations used between the data services, the business abstraction they provide, and the actual SDS services they consume. Whatever that relation is, there is always only one data service that consumes one SDS web service (and one SDS web services is consumed by one one data service).
-- There is only one data service exposing access to a given business abstraction. This data service consumes only one SDS service, and this SDS service is consumed by only that one data service. These are simplest cases, like Low Fare Range, or Low Fare History.
-- There are multiple services exposing given business abstraction. For example both Bargain Finder Max data service and Instaflight data service expose Shopping itineraries per given day. Both data services consume their respective SDS web services.
+There are multiple relations used between the data services, the business abstraction they provide, and the actual Sabre web services they consume. Whatever that relation is, there is always only one data service that consumes one Sabre web service (and one Sabre web services is consumed by one one data service).
+- There is only one data service exposing access to a given business abstraction. This data service consumes only one web service, and this web service is consumed by only that one data service. These are simplest cases, like Low Fare Range, or Low Fare History.
+- There are multiple services exposing given business abstraction. For example both Bargain Finder Max data service and Instaflight data service expose Shopping itineraries per given day. Both data services consume their respective Sabre REST web services.
 - One data service may expose multiple data abstractions. For example Advanced Calendar data service is exposing both cheapest options per date range, itineraries per given day, and the alternate days matrix for given plus minus travel dates flexibility. In other words one data service implements multiple interfaces.
 
 One widget consumes only one abstraction provided by one (rarely more) data service. One data service may be consumed by multiple widgets. For example lead prices for date range is consumed by both Calendar widget and by lead price chart widget. In simples case one data service abstraction is consumed by ony one widget, like the For example the `FareForecastWidget` consumes `FareForecastDataService`.
-Data services, apart from being consumed by the widgets, also provide higher level business abstraction API to get data from SDS for the 3rd party developers.
+Data services, apart from being consumed by the widgets, also provide higher level business abstraction API to get data from web for the 3rd party developers.
 
 From code perspective data services are located in `src\webservices` directory and are source file with name ending with `DataService`.
 
 The data services are instantiated by clients (widgets) either directly or, optionally, thru the factories called _search strategy factories_.
 A _search strategy_ represents one data service, or a set of data services (exposing the same abstraction) which are orchestrated to provide
 the same business abstraction (for example by calling two data services in parallel and merging results).
-An example of such orchestration is the `ItinerariesSearchStrategyFactory`, which when called in some mode, creates orchestrated data service with calls Instaflights SDS web service, and then there or no results in Instaflights, it called Bargain Finder Max web services.
+An example of such orchestration is the `ItinerariesSearchStrategyFactory`, which when called in some mode, creates orchestrated data service with calls Instaflights Sabre web service, and then there or no results in Instaflights, it called Bargain Finder Max web services.
 In other mode it can also produce other orchestrated service which first calls Instaflights and then calls Bargain Finder Max.
 
 Same search strategy factories are reused across multiple widgets.
@@ -117,8 +117,8 @@ From data services implementation perspective, several complexity levels are pos
 
 ### Communication between widgets
 Widgets collaborate with each other in following cases:
-1. The Search Form Widget, which collects user search criteria, must pass these criteria to any other widget which does the _active search_ in SDS services (for example Itineraries List Widget or Calendar Widget).
-_active search_ means that the widget which executes it, on receiving search criteria, is the one that initiates the search in the SDS (and also presents response data in its view).
+1. The Search Form Widget, which collects user search criteria, must pass these criteria to any other widget which does the _active search_ in Sabre REST services (for example Itineraries List Widget or Calendar Widget).
+_active search_ means that the widget which executes it, on receiving search criteria, is the one that initiates the search in the Sabre REST APIs (and also presents response data in its view).
 This is in contrary to the _passive_ mode, in which, the search and populating web services response cache, is initiated by other (_acive search_) widget, while the widget in _passive_ mode is reusing the data from cache.
 2. Active search widgets, for example Calendar Widget or Lead Price Chart Widget, must pass information that user selected some view element (like calendar day cell or day bar price) and needs to be shown more data in a detailed display (like in Itineraries List Widget).
 Then the active search widget must inform the passive search widget on what what details user requested (like selected date of travel), and give reference to the data service where the passive widget can get the data from (the data retrieved by active search and cache in data service).
@@ -139,23 +139,23 @@ Widgets itself (the classes in `widgets` directory) are commonly implementing th
 5. For subsequent search criteria received, apart from processing and updating scope objects, make sure you clear all old scope results, in particular old error messages if present.
 
 ### <a name="Security"></a> Security
-SDS REST services use token based authentication (OAuth 2). In order to obtain the token, users must provide SDS username and password.
-We cannot allow that username and password to be stored in Javascript file that is downloaded to the end-user browsers. That is why some kind of proxy (bridge) is needed to participate in communication between the widgets (end user browser) and SDS services.
+Sabre REST APIs use token based authentication (OAuth 2). In order to obtain the token, users must provide Sabre REST APIs username and password.
+We cannot allow that username and password to be stored in Javascript file that is downloaded to the end-user browsers. That is why some kind of proxy (bridge) is needed to participate in communication between the widgets (end user browser) and Sabre REST  services.
 Such bridge implementation in Java is available on [Github](https://github.com/SabreDevStudio/SabreRESTJavaBridge). Tomcat J2EE container is needed to run that bridge, see details in [Github](https://github.com/SabreDevStudio/SabreRESTJavaBridge).
-Then, it is the bridge which has Sabre SDS username and password and which calls SDS services, on getting requests from the widgets.
+Then, it is the bridge which has Sabre Sabre REST APIs username and password and which calls web services, on getting requests from the widgets.
 
 Please note that it is **your responsibility** to properly secure access to the bridge you are setting up for your end customers.
 
 #### Use of browser local storage
-On the first widget run, widgets are making calls to the SDS lookup (decode) services (airport lookup, country lookup, airline lookup, aircraft lookup), to populate dictionaries for decoding.
-Upon getting successful response from SDS and parsing, these dictionaries are stored in local storage of the browser, and then not fetched again.
+On the first widget run, widgets are making calls to the Sabre REST APIs lookup (decode) services (airport lookup, country lookup, airline lookup, aircraft lookup), to populate dictionaries for decoding.
+Upon getting successful response from Sabre REST APIs and parsing, these dictionaries are stored in local storage of the browser, and then not fetched again.
 There is not expiration or renew policy for those dictionaries in local storage.
 
 ### Error handling
 We can have following error categories:
 1. Network connectivity errors (like link down, packages dropped by firewall)
 2. All non-successful HTTP response code (all HTTP response codes other than 200 series).
-From SDS user perspective, the error code then is nearly always 404, and there is actual business error message in the response (like no fares available for given search criteria)
+From Sabre REST APIs user perspective, the error code then is nearly always 404, and there is actual business error message in the response (like no fares available for given search criteria)
 3. User input validation errors: like particular search form fields do not work with each other, the search form criteria are not handled by the web service (like length of stay over 16 days not supported).
 
 All errors from point 1. and 2. are presented (presented, not caught) in the same place, which is the designated widget called ErrorDisplayWidget.
@@ -222,7 +222,7 @@ But all [Angular i18n](https://docs.angularjs.org/guide/i18n) should work. Curre
 
 Currency symbol:
 _Warning_: Angular native `currency` filter is overridden with the `isoCurrency` filter from `iso-currency` (see bower.json, see `SDSWidgets`).
-In all views the (overridden) currency filter have currency passed as argument, so the prices are presented in the currency as they come from the SDS web service.
+In all views the (overridden) currency filter have currency passed as argument, so the prices are presented in the currency as they come from the Sabre REST APIs web service.
 
 Date display formats:
 All dates are represented by Moment.js dates and are given explicit formatting, so they are presented in the same format regardless of browser locale or Angular locale.
