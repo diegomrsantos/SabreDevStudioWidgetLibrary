@@ -1,0 +1,123 @@
+@mixin createFormInlineForAllBreakpoints {
+  @include createFormInlineForBreakpoint('40em', 'sm');
+  @include createFormInlineForBreakpoint('50em', 'md');
+  @include createFormInlineForBreakpoint('60em', 'lg');
+  @include createFormInlineForBreakpoint('70em', 'xl');
+}
+
+/* mimicking bootstrap form-inline */
+@mixin createFormInlineForBreakpoint($breakpoint, $sizeShortcut) {
+  &[min-width~="#{$breakpoint}"] {
+    .SDS-form-#{$sizeShortcut}-inline .form-group:not(.SDS-form-inline-exclude) {
+      display: inline-block;
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .form-control:not(.SDS-form-inline-exclude) {
+      display: inline-block;
+      width: auto;
+      vertical-align: middle;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .form-control-static:not(.SDS-form-inline-exclude) {
+      display: inline-block;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .input-group:not(.SDS-form-inline-exclude) {
+      display: inline-table;
+      vertical-align: middle;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .input-group .input-group-addon,
+    .SDS-form-#{$sizeShortcut}-inline .input-group .input-group-btn,
+    .SDS-form-#{$sizeShortcut}-inline .input-group .form-control {
+      width: auto;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .input-group > .form-control {
+      width: 100%;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .control-label {
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .radio,
+    .SDS-form-#{$sizeShortcut}-inline .checkbox {
+      display: inline-block;
+      margin-top: 0;
+      margin-bottom: 0;
+      vertical-align: middle;
+    }
+
+    .SDS-form-#{$sizeShortcut}-inline .radio label:not(.btn), // do not to decrease padding left when labels are styled as buttons, inside button groups
+    .SDS-form-#{$sizeShortcut}-inline .checkbox label:not(.btn) {
+      padding-left: 0;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .radio input[type="radio"],
+    .SDS-form-#{$sizeShortcut}-inline .checkbox input[type="checkbox"] {
+      position: relative;
+      margin-left: 0;
+    }
+    .SDS-form-#{$sizeShortcut}-inline .has-feedback .control-feedback {
+      top: 0;
+    }
+    // below add-ons to bootstrap form-inline
+    .SDS-form-#{$sizeShortcut}-inline .btn.SDS-form-inline-button {
+      margin-left: 10px;
+    }
+  }
+}
+
+.SDSResponsiveElement {
+  @include createFormInlineForAllBreakpoints;
+}
+
+.SDSResponsiveElement {
+  .SDS-responsive-panel-body {
+    padding: 8px;
+  }
+  &[min-width~="60em"] .SDS-responsive-panel-body {
+    // reset to bootstrap panel-body value
+    padding: 15px;
+  }
+
+  .SDS-responsive-panel-heading {
+    padding: 5px 8px;
+  }
+  &[min-width~="60em"] .SDS-responsive-panel-heading {
+    // reset to bootstrap panel-body value
+    padding: 10px 15px;
+  }
+}
+
+// default padding for bootstrap accordion is too big for small displays
+.SDSResponsiveElement {
+  accordion .panel .panel-body {
+    padding: 4px;
+  }
+  &[min-width~="60em"] accordion .panel .panel-body {
+    // reset to bootstrap panel-body value
+    padding: 15px;
+  }
+
+  accordion .panel .panel-heading {
+    padding: 5px 8px;
+  }
+  &[min-width~="60em"] accordion .panel .panel-heading {
+    // reset to bootstrap panel-body value
+    padding: 10px 15px;
+  }
+}
+
+.SDSResponsiveElement {
+  .SDS-lead {
+    //font size decrease for mobile
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 200;
+    line-height: 1.2;
+  }
+  &[min-width~="60em"] .SDS-lead {
+    // nearly same as Bootstrap .lead, but we do not want Bootstrap responsive (viewport responsive) styling for it.
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 200;
+    line-height: 1.4;
+  }
+}

@@ -18,6 +18,8 @@ define([
             .constant('dateTimeFormat', 'YYYY-MM-DDTHH:mm:ss')
             .constant('dateFormat', 'YYYY-MM-DD')
             .constant('errorEvent', 'errorEvent')
+            .constant('networkErrorEvent', 'networkErrorEvent')
+            .constant('validationErrorEvent', 'validationErrorEvent')
             .constant('resetErrorsEvent', 'resetErrorsEvent')
             .factory('businessMessagesErrorHandler', ['ErrorReportingService', function (ErrorReportingService) {
                 function identityAsArray(arg) {
@@ -44,23 +46,23 @@ define([
                     }
                 };
             }])
+            .service('NetworkErrorReportingService', ['$rootScope', 'networkErrorEvent', function ($rootScope, errorEvent) {
+                return {
+                    reportError: function (error) {
+                        $rootScope.$broadcast(errorEvent, [error], 'Network error');
+                    }
+                };
+            }])
             .factory('ValidationErrorReportingService', [
-                '$modal'
-                , function ($modal) {
+                '$rootScope',
+                'validationErrorEvent'
+                , function (
+                    $rootScope,
+                    validationErrorEvent
+                ) {
                     return {
                         reportErrors: function (errors, errorsCategory) {
-                            $modal.open({
-                                animation: true,
-                                templateUrl: '../widgets/view-templates/partials/ErrorsModal.tpl.html',
-                                controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-                                    $scope.errorsList = errors;
-                                    $scope.modalTitle = errorsCategory;
-
-                                    $scope.ok = function () {
-                                        $modalInstance.close();
-                                    };
-                                }]
-                            });
+                            $rootScope.$broadcast(validationErrorEvent, errors, errorsCategory);
                         }
                     };
                 }])

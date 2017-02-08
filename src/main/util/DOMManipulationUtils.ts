@@ -1,5 +1,7 @@
-define([],
-    function () {
+define([
+        'angular'
+    ],
+    function (angular) {
         'use strict';
 
         /*
@@ -53,6 +55,10 @@ define([],
             });
         }
 
+        function removeOnClickHandler(element, selectorForToggleLink) {
+            element.querySelectorAll(selectorForToggleLink).off('click');
+        }
+
         function addShowOnClickHandler(element, selectorForShowLink, selectorForContentToShow, selectorForContentToHide) {
             element.querySelectorAll(selectorForShowLink).on('click', function () { //event delegation not used for code simplicity, especially without jQuery, reconsider
                 var elementsToShow = element.querySelectorAll(selectorForContentToShow);
@@ -87,5 +93,6 @@ define([],
               addToggleOnClickHandler: addToggleOnClickHandler
             , addShowOnClickHandler: addShowOnClickHandler
             , addHideOnClickHandler: addHideOnClickHandler
+            , removeOnClickHandler: removeOnClickHandler
         };
     });

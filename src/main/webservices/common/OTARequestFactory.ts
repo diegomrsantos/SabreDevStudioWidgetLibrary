@@ -2,7 +2,8 @@ define([],
     function () {
         'use strict';
 
-        function OTARequestFactory() {
+        function OTARequestFactory(configOverrides) {
+            this.configOverrides = configOverrides;
         }
 
         OTARequestFactory.prototype.createRequest = function(searchCriteria) {
@@ -11,7 +12,7 @@ define([],
                 'OTA_AirLowFareSearchRQ': {
                       'OriginDestinationInformation': this.createOriginDestinationInfos(searchCriteria)
                     , 'POS': this.createPOS()
-                    , 'TPA_Extensions': this.createRequestTPAExtensions(requestedItinsCount, searchCriteria.dateFlexibilityDays)
+                    , 'TPA_Extensions': this.createRequestTPAExtensions(requestedItinsCount, searchCriteria)
                     , 'TravelPreferences': this.createTravelPreferences(requestedItinsCount, searchCriteria.preferredCabin, searchCriteria.maxStops)
                     , 'TravelerInfoSummary': this.createTravelerInfoSummary(searchCriteria.passengerSpecifications)
                 }
@@ -38,7 +39,8 @@ define([],
                             },
                             "ID": "REQ.ID",
                             "Type": "0.AAA.X"
-                        }
+                        },
+                        "PseudoCityCode": this.configOverrides.bfmRequestPcc
                     }
                 ]
             };
@@ -74,11 +76,11 @@ define([],
             };
         };
 
-        OTARequestFactory.prototype.createRequestTPAExtensions = function(requestedItinsCount, dateFlexibilityDays) {
+        OTARequestFactory.prototype.createRequestTPAExtensions = function(requestedItinsCount, searchCriteria) {
             return {
                 "IntelliSellTransaction": {
                     "RequestType": {
-                        "Name": this.getRequestType(requestedItinsCount, dateFlexibilityDays)
+                        "Name": this.getRequestType(requestedItinsCount, searchCriteria.dateFlexibilityDays)
                     }
                 }
             };

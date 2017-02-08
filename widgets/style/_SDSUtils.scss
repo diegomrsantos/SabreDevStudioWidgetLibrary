@@ -1,0 +1,83 @@
+/* general class to add to all for all inactive/deactivated elements */
+.SDSInactive {
+  @include opacity(0.35);
+  pointer-events: none;
+}
+
+/* helper class, for use in javascript, to hide elements */
+.SDSHidden {
+  visibility: hidden;
+}
+
+.SDSInitiallyNotDisplayed {
+  display: none;
+}
+
+.SDSNoWrap {
+  white-space:nowrap;
+}
+
+.SDSDisableLink {
+  pointer-events: none;
+}
+
+.SDSTopBuffer-xs {
+  margin-top: 1rem;
+}
+.SDSTopBuffer-sm {
+  margin-top: 2rem;
+}
+.SDSTopBuffer-md {
+  margin-top: 3rem;
+}
+
+.SDSBottomBuffer-xs {
+  margin-bottom: 1rem;
+}
+.SDSBottomBuffer-sm {
+  margin-bottom: 2rem;
+}
+.SDSBottomBuffer-md {
+  margin-bottom: 3rem;
+}
+
+.SDSHideOverflow {
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.SDSSearchInProgressUponClicked {
+  cursor: wait;
+}
+
+.SDSPaddingSmall {
+  padding-right: 0.2rem;
+  padding-left: 0.2rem;
+}
+
+.SDSCursorPointer {
+  cursor: pointer;
+}
+
+$SDSPanelLeftRightPadding: 8px;
+
+.SDS-panel {
+  margin-bottom: 8px;
+}
+
+.SDS-panel-body {
+  padding: $SDSPanelLeftRightPadding;
+}
+
+.SDS-panel-heading {
+  padding: 5px $SDSPanelLeftRightPadding;
+}
+
+.SDS-panel-footer {
+  padding: 5px $SDSPanelLeftRightPadding;
+}
+
+.SDS-no-paddings {
+  padding: 0;
+}

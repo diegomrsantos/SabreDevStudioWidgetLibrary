@@ -4,8 +4,9 @@ define([
         , 'lodash'
         , 'angular_bootstrap'
         , 'widgets/SDSWidgets'
-        , 'datamodel/SearchCriteria'
+        , 'datamodel/search/SearchCriteriaFactory'
         , 'webservices/common/searchStrategyFactories/AlternateDatesSearchStrategyFactory'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -13,8 +14,9 @@ define([
         , _
         , angular_bootstrap
         , SDSWidgets
-        , SearchCriteria
+        , SearchCriteriaFactory
         , AlternateDatesSearchStrategyFactorySrc
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -25,19 +27,23 @@ define([
                     , 'AlternateDatesSearchStrategyFactory'
                     , 'newSearchCriteriaEvent'
                     , 'SearchCriteriaBroadcastingService'
+                    , 'DateSelectedBroadcastingService'
                 , function (
                       $scope
                     , AlternateDatesSearchStrategyFactory
                     , newSearchCriteriaEvent
                     , SearchCriteriaBroadcastingService
+                    , DateSelectedBroadcastingService
                 ) {
                     var searchService = AlternateDatesSearchStrategyFactory.createSearchStrategy($scope.activeSearchWebService);
 
                     var requestedDates: any = {};
 
+                    var lastSearchCriteria;
+
                     $scope.executeLifeSearchOnPredefinedCriteriaIfPresent = function (origin, destination, departureDateString, returnDateString, altDatesPlusMinus) {
                         if (origin && destination && departureDateString && returnDateString) {
-                            var searchCriteria = SearchCriteria.prototype.buildRoundTripTravelSearchCriteriaWithDateFlexibility(origin, destination, departureDateString, returnDateString, altDatesPlusMinus);
+                            var searchCriteria = SearchCriteriaFactory.buildRoundTripTravelSearchCriteriaWithDateFlexibility(origin, destination, departureDateString, returnDateString, altDatesPlusMinus);
                             $scope.processSearchCriteria(searchCriteria);
                         }
                     };
@@ -48,6 +54,7 @@ define([
                     });
 
                     $scope.processSearchCriteria = function (searchCriteria) {
+                        lastSearchCriteria = searchCriteria;
                         searchService.getAlternateDatesPriceMatrix(searchCriteria, _.partial(processAltDatesPriceMatrix, searchCriteria), processServiceErrorMessages);
                     };
 
@@ -62,6 +69,17 @@ define([
                     $scope.isCentralRequestedDate = function (requestedDepartureDate, requestedReturnDate) {
                         return (requestedDepartureDate.isSame(requestedDates.departureDate)
                                 && (_.isUndefined(requestedReturnDate) || requestedReturnDate.isSame(requestedDates.returnDate)));
+                    };
+
+                    $scope.cellClicked = function (requestedDepartureDate, requestedReturnDate) {
+                        var newSearchCriteria = lastSearchCriteria.cloneWithDatesAdjustedToOtherDepartureDate(requestedDepartureDate, requestedReturnDate);
+                        DateSelectedBroadcastingService.newSearchCriteria = newSearchCriteria;
+                        DateSelectedBroadcastingService.originalDataSourceWebService = searchService;
+                        DateSelectedBroadcastingService.broadcast();
+                        $scope.cellClickedCallback({
+                            searchCriteria: newSearchCriteria,
+                            originalDataSourceWebService: searchService
+                        });
                     };
 
                     function processAltDatesPriceMatrix(searchCriteria, altDatesPriceMatrix) {
@@ -95,8 +113,10 @@ define([
                 return {
                     restrict: 'EA',
                     scope: {
-                          activeSearch: '@'
-                        , activeSearchWebService: '@'
+                        activeSearch: '@',
+                        activeSearchWebService: '@',
+                        searchCriteria: '=?',
+                        cellClickedCallback: '&?'
                     },
                     templateUrl: '../widgets/view-templates/widgets/AlternateDatesMatrix.tpl.html',
                     controller: 'AlternateDatesMatrixCtrl',
@@ -108,6 +128,10 @@ define([
                             , element.attr('return-date')
                             , element.attr('alt-dates-plus-minus')
                         );
+                        if (scope.searchCriteria) {
+                            scope.processSearchCriteria(scope.searchCriteria);
+                        }
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
                     }
                 };
             });

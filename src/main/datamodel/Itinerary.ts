@@ -20,6 +20,8 @@ define([
 
         this.itineraryPricingInfo = undefined;
 
+        this.weightedPriceAmount = undefined;
+
         // convenience property-style getters, used for filtering and sorting of itineraries list
         /**
          * Returns the sum of trip durations for all legs, in minutes.
@@ -67,13 +69,15 @@ define([
         Object.defineProperty(this, 'totalFareAmountWithCurrency', {
             get: function() {
                 return this.itineraryPricingInfo.fareAmounts.totalFare;
-            }
+            },
+            configurable: true
         });
 
         Object.defineProperty(this, 'totalFareAmount', {
             get: function() {
                 return this.itineraryPricingInfo.fareAmounts.totalFare.amount;
-            }
+            },
+            configurable: true
         });
 
         Object.defineProperty(this, 'totalFareCurrency', {
@@ -113,8 +117,17 @@ define([
      */
     Itinerary.prototype.addLeg = function(leg) {
         this.legs.push(leg);
+    };
+
+    Itinerary.prototype.build = function() {
+        // after calling build we assume the itinerary object is not mutable
         this.updateLegsChangeOfAirportAtDeparture();
         this.updateLegsChangeOfAirportAtArrival();
+        calculateHasRedEyeFlight(this);
+        calculateHasShortConnection(this);
+        calculateHasLongConnection(this);
+        calculateHasLowSeatsRemaining(this);
+        calculateAllMarketingAirlines(this);
     };
 
     /**
@@ -142,7 +155,7 @@ define([
             if (idx === 0) {
                 leg.hasAirportChangeAtDeparture = !that.isTripDepartureAndReturnSameAirport();
             } else {
-                leg.hasAirportChangeAtDeparture = leg.getLegDepartureAirport() !== allLegs[idx - 1].getLegArrivalAirport();
+                leg.hasAirportChangeAtDeparture = leg.departureAirport !== allLegs[idx - 1].arrivalAirport;
             }
         });
     };
@@ -159,7 +172,7 @@ define([
             if (that.isLastLeg(idx)) {
                 leg.hasAirportChangeAtArrival = !that.isTripDepartureAndReturnSameAirport();
             } else {
-                leg.hasAirportChangeAtArrival = leg.getLegArrivalAirport() !== allLegs[idx + 1].getLegDepartureAirport();
+                leg.hasAirportChangeAtArrival = leg.arrivalAirport !== allLegs[idx + 1].departureAirport;
             }
         });
     };
@@ -237,17 +250,13 @@ define([
      * returns unique list of all marketing airlines, in the order as they first appear in the itinerary.
      * @returns {Array|*}
      */
-    Itinerary.prototype.getAllMarketingAirlines = function() {
-        // WARN: performance optimisation, assuming Itinerary object is not changed after creation (and adding all legs in the beginning)
-        if (_.isUndefined(this.allMktAirlines)) {
-            var allMktAirlines = [];
-            this.legs.forEach(function (leg) {
-                __.pushAll(allMktAirlines, leg.getAllMarketingAirlines());
-            });
-            this.allMktAirlines = __.uniq(allMktAirlines);
-        }
-        return this.allMktAirlines;
-    };
+    function calculateAllMarketingAirlines(itinerary) {
+        var allMktAirlines = [];
+        itinerary.legs.forEach(function (leg) {
+            __.pushAll(allMktAirlines, leg.getAllMarketingAirlines());
+        });
+        itinerary.allMarketingAirlines = __.uniq(allMktAirlines);
+    }
 
     /**
      * Returns deduplicated list of all the connection airports of the itinerary.
@@ -270,15 +279,15 @@ define([
     };
 
     Itinerary.prototype.getTripDepartureAirport = function () {
-        return __.first(this.legs).getLegDepartureAirport();
+        return __.first(this.legs).departureAirport;
     };
 
     Itinerary.prototype.getTripArrivalAirport= function () {
-        return __.last(this.legs).getLegArrivalAirport();
+        return __.last(this.legs).arrivalAirport;
     };
 
     Itinerary.prototype.getFirstLegArrivalAirport = function () {
-        return __.first(this.legs).getLegArrivalAirport();
+        return __.first(this.legs).arrivalAirport;
     };
 
     /**
@@ -306,6 +315,10 @@ define([
 
     Itinerary.prototype.isOneWayTravel = function () {
         return (this.legs.length === 1);
+    };
+
+    Itinerary.prototype.isNonRefundableIndicatorDefined = function () {
+        return __.isDefined(this.itineraryPricingInfo.nonRefundableIndicator)
     };
 
     /**
@@ -358,15 +371,11 @@ define([
      * @returns {boolean|*}
      * @memberof Itinerary
      */
-    Itinerary.prototype.hasRedEyeFlight = function () {
-        // WARN: performance optimisation, assuming Itinerary object is not changed after creation (all legs are added after object creation, and before querying this hasRedEyeFlight property)
-        if (_.isUndefined(this.hasRedEyeFlightIndicator)) {
-            this.hasRedEyeFlightIndicator = this.legs.some(function (leg) {
-                return leg.hasRedEyeFlight();
-            });
-        }
-        return this.hasRedEyeFlightIndicator;
-    };
+    function calculateHasRedEyeFlight(itinerary) {
+        itinerary.hasRedEyeFlight = itinerary.legs.some(function (leg) {
+            return leg.hasRedEyeFlight();
+        });
+    }
 
     /**
      * Returns true if there is any <em>short</em> connection in the itinerary.
@@ -375,11 +384,11 @@ define([
      * May be used to warn the customer that the returned itinerary has short connection time at any airport.
      * @returns {boolean}
      */
-    Itinerary.prototype.hasShortConnection = function () {
-        return this.legs.some(function (leg) {
+    function calculateHasShortConnection(itinerary) {
+        itinerary.hasShortConnection = itinerary.legs.some(function (leg) {
             return leg.hasShortConnection();
         });
-    };
+    }
 
     /**
      * Returns true if there is any <em>long</em> connection in the itinerary.
@@ -388,11 +397,11 @@ define([
      * May be used to warn the customer that the returned itinerary has long waiting time at any airport.
      * @returns {boolean}
      */
-    Itinerary.prototype.hasLongConnection = function () {
-        return this.legs.some(function (leg) {
+    function calculateHasLongConnection(itinerary) {
+        itinerary.hasLongConnection = itinerary.legs.some(function (leg) {
             return leg.hasLongConnection();
         });
-    };
+    }
 
     /**
      * Returns number of seats left to be bought in the given (whole) itinerary at the presented price (and its conditions).
@@ -406,9 +415,9 @@ define([
         return this.itineraryPricingInfo.getSeatsRemaining(legIdx, segmentIdx);
     };
 
-    Itinerary.prototype.hasLowSeatsRemaining = function () {
-        return this.itineraryPricingInfo.hasLowSeatsRemaining();
-    };
+    function calculateHasLowSeatsRemaining(itinerary) {
+        itinerary.hasLowSeatsRemaining = itinerary.itineraryPricingInfo.hasLowSeatsRemaining();
+    }
 
     Itinerary.prototype.getCabin = function (legIdx, segmentIdx) {
         return this.itineraryPricingInfo.getCabin(legIdx, segmentIdx);
@@ -420,6 +429,25 @@ define([
 
     Itinerary.prototype.getBaggageAllowance = function (legIdx, segmentIdx) {
         return this.itineraryPricingInfo.getBaggageAllowance(legIdx, segmentIdx);
+    };
+
+    Itinerary.prototype.getMinBaggageAllowance = function () {
+        return this.itineraryPricingInfo.getMinBaggageAllowance();
+    };
+
+    Itinerary.prototype.equals = function (otherItin) {
+        if (this.legs.length !== otherItin.legs.length) {
+            return false;
+        }
+        for (var i = 0; i < this.legs.length; i++) {
+            if (!this.legs[i].equals(otherItin.legs[i])) {
+                return false;
+            }
+        }
+        if (!this.itineraryPricingInfo.equals(otherItin.itineraryPricingInfo)) {
+            return false;
+        }
+        return true;
     };
 
     return Itinerary;

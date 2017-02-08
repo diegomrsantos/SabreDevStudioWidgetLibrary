@@ -14,6 +14,14 @@ define([
             };
         }
 
+        ItinerariesListSummaryByAirlineAndNumberOfStops.prototype.initializeSummaryForAirline = function(airlineSummaries, marketingAirline) {
+            if (_.isUndefined(airlineSummaries[marketingAirline])) {
+                airlineSummaries[marketingAirline] = this.createEmptySummary();
+            }
+            return airlineSummaries;
+        };
+
+        /*jshint maxcomplexity: 6*/
         ItinerariesListSummaryByAirlineAndNumberOfStops.prototype.calculateSummaries = function(itineraries) {
 
             var totalSummary = this.createEmptySummary();
@@ -22,17 +30,14 @@ define([
             var that = this;
             itineraries.forEach(function (itin) {
                 var marketingAirline = itin.getFirstLeg().getFirstFlightMarketingAirline();
-
-                if (_.isUndefined(airlineSummaries[marketingAirline])) {
-                    airlineSummaries[marketingAirline] = that.createEmptySummary();
-                }
+                airlineSummaries = that.initializeSummaryForAirline(airlineSummaries, marketingAirline);
 
                 var itineraryTotalFareAmount = itin.totalFareAmountWithCurrency.amount;
                 var totalFareCurrency = itin.totalFareAmountWithCurrency.currency;
                 var itineraryNumberOfStops = itin.getNumberOfStops();
 
-                that.updateSummary(totalSummary, itineraryTotalFareAmount, totalFareCurrency, itineraryNumberOfStops);
-                that.updateSummary(airlineSummaries[marketingAirline], itineraryTotalFareAmount, totalFareCurrency, itineraryNumberOfStops);
+                that.updateSummary(totalSummary, itineraryTotalFareAmount, totalFareCurrency, itineraryNumberOfStops, itin.id);
+                that.updateSummary(airlineSummaries[marketingAirline], itineraryTotalFareAmount, totalFareCurrency, itineraryNumberOfStops, itin.id);
             });
 
             totalSummary =  this.resetInfinityValuesToUndefined(totalSummary);
@@ -48,37 +53,48 @@ define([
             };
         }
 
-        ItinerariesListSummaryByAirlineAndNumberOfStops.prototype.updateSummary = function(summary, itineraryTotalFareAmount, totalFareCurrency, itineraryNumberOfStops) {
-            if (summary.totalFareCurrency && summary.totalFareCurrency !== totalFareCurrency) {
+        function assertSameCurrencies(summary, candidateCurrency) {
+            if (summary.totalFareCurrency && summary.totalFareCurrency !== candidateCurrency) {
                 throw new Error('Unable to compare two prices when they have different currencies');
             }
+        }
+
+        ItinerariesListSummaryByAirlineAndNumberOfStops.prototype.updateSummary = function(summary, itineraryTotalFareAmount, totalFareCurrency, itineraryNumberOfStops, itineraryId) {
+            assertSameCurrencies(summary, totalFareCurrency);
             summary.totalFareCurrency = totalFareCurrency;
 
             if (itineraryNumberOfStops === 0) {
-                summary.nonStopLowestPrice = Math.min(summary.nonStopLowestPrice, itineraryTotalFareAmount);
+                if (itineraryTotalFareAmount < summary.nonStopLowestPrice) {
+                    summary.nonStopLowestPrice = itineraryTotalFareAmount;
+                    summary.nonStopLowestPriceItineraryId = itineraryId;
+                }
             } else if (itineraryNumberOfStops === 1) {
-                summary.oneStopLowestPrice = Math.min(summary.oneStopLowestPrice, itineraryTotalFareAmount);
+                if (itineraryTotalFareAmount < summary.oneStopLowestPrice) {
+                    summary.oneStopLowestPrice = itineraryTotalFareAmount;
+                    summary.oneStopLowestPriceItineraryId = itineraryId;
+                }
             } else { // for all number of stops over 1
-                summary.twoAndMoreStopsLowestPrice = Math.min(summary.twoAndMoreStopsLowestPrice, itineraryTotalFareAmount);
+                if (itineraryTotalFareAmount < summary.twoAndMoreStopsLowestPrice) {
+                    summary.twoAndMoreStopsLowestPrice = itineraryTotalFareAmount;
+                    summary.twoAndMoreStopsLowestPriceItineraryId = itineraryId;
+                }
             }
         }
 
         ItinerariesListSummaryByAirlineAndNumberOfStops.prototype.createEmptySummary = function() {
             return {
-                nonStopLowestPrice: Infinity
-                , oneStopLowestPrice: Infinity
-                , twoAndMoreStopsLowestPrice: Infinity
+                nonStopLowestPrice: Infinity,
+                nonStopLowestPriceItineraryId: undefined,
+                oneStopLowestPrice: Infinity,
+                oneStopLowestPriceItineraryId: undefined,
+                twoAndMoreStopsLowestPrice: Infinity,
+                twoAndMoreStopsLowestPriceItineraryId: undefined
             };
         }
 
         ItinerariesListSummaryByAirlineAndNumberOfStops.prototype.airlineSummariesToArray = function(airlineSummariesObj) {
             return _.map(airlineSummariesObj, function (summary, airlineCode) {
-                return {
-                    airline: airlineCode
-                    , nonStopLowestPrice: summary.nonStopLowestPrice
-                    , oneStopLowestPrice: summary.oneStopLowestPrice
-                    , twoAndMoreStopsLowestPrice: summary.twoAndMoreStopsLowestPrice
-                };
+                return _.extend({}, {airline: airlineCode}, summary);
             });
         }
 

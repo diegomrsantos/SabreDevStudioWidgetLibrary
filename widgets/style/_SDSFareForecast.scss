@@ -1,8 +1,7 @@
 .SDSFareForecastWidget {
 
   // enforce size of this widget to be small
-  width: 23rem;
-  height: 5rem;
+  max-width: 23rem;
 
   // shrink default bootstrap paddings
   .panel-body {

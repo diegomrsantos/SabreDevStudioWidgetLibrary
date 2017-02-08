@@ -220,10 +220,6 @@ Styling instructions are mobile first.
 Widgets do not support any special localization or internationalization apart from what is supported by Angular.
 But all [Angular i18n](https://docs.angularjs.org/guide/i18n) should work. Currently the included `angular.js` file has the default (US) localization.
 
-Currency symbol:
-_Warning_: Angular native `currency` filter is overridden with the `isoCurrency` filter from `iso-currency` (see bower.json, see `SDSWidgets`).
-In all views the (overridden) currency filter have currency passed as argument, so the prices are presented in the currency as they come from the Sabre REST APIs web service.
-
 Date display formats:
 All dates are represented by Moment.js dates and are given explicit formatting, so they are presented in the same format regardless of browser locale or Angular locale.
 We use the default Moment.js build, without default (English) locale strings. It is possible to bundle moment.js with [other locale](http://momentjs.com/docs/#/i18n/).
@@ -237,7 +233,3 @@ We use the default Moment.js build, without default (English) locale strings. It
 - all dates and date times, after being parsing from web service or from the user, are internally stored and passed between functions as Moment.js objects. The date or date time returning methods also returns them as Moment.js objects.
 - the notion of <em>segment</em> is the same as <em>flight</em>.
 - the notion of _relative_ and _absolute_ flight (segment) indexes: _absolute_ flight index is the index of flight in the whole travel. _relative_ flight index is the index in a given leg.
-
-## Disclaimer of Warranty and Limitation of Liability
-This software and any compiled programs created using this software are furnished “as is” without warranty of any kind, including but not limited to the implied warranties of merchantability and fitness for a particular purpose. No oral or written information or advice given by Sabre, its agents or employees shall create a warranty or in any way increase the scope of this warranty, and you may not rely on any such information or advice.
-Sabre does not warrant, guarantee, or make any representations regarding the use, or the results of the use, of this software, compiled programs created using this software, or written materials in terms of correctness, accuracy, reliability, currentness, or otherwise. The entire risk as to the results and performance of this software and any compiled applications created using this software is assumed by you. Neither Sabre nor anyone else who has been involved in the creation, production or delivery of this software shall be liable for any direct, indirect, consequential, or incidental damages (including damages for loss of business profits, business interruption, loss of business information, and the like) arising out of the use of or inability to use such product even if Sabre has been advised of the possibility of such damages.

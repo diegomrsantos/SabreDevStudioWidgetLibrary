@@ -1,0 +1,50 @@
+<div class="SDSDestinationFinderOfferDetailsInfoView">
+    <div class="triangle"></div>
+    <!--WARN: as this template is used by ui-gmap-window, that ui-gmap-window exposes all model variables only thru 'parameter' object.
+    It is not possible to rename this parameter in directive.
+    Therefore if this template is reused also in for other directives, the other directive has to expose model at 'parameter' model variable -->
+    <h6 class="text-center">
+        <strong>{{parameter.destination | cityFullName}}</strong>
+        from <strong>{{parameter.lowestFare.amount | isoCurrency:parameter.lowestFare.currency}}</strong>
+    </h6>
+    <ul class="SDSTopLevelList list-unstyled">
+        <li class="SDS-simple-row" ng-repeat="offer in parameter.offers | orderBy:['LowestFare.Fare', 'departureDateTime', 'returnDateTime']">
+            <div class="SDS-simple-col-5-20">
+                <!--show only first airline and airline logo, because of missing space -->
+                <airline-logo airline-code="{{offer.LowestFare.AirlineCodes[0]}}"></airline-logo>
+                <small>{{offer.LowestFare.AirlineCodes[0]| airlineFullName}}</small>
+            </div>
+
+            <div class="SDS-simple-col-11-20">
+                <small>
+                    {{offer.departureDateTime | date:'dMMM'}} - {{offer.returnDateTime | date:'dMMM'}} <!-- format example: 1Sep, 30Sep-->
+                    (<ng-pluralize count="offer.lengthOfStay"
+                                   when="{'one': '1 day',
+                                          'other': '{} days'}">
+                    </ng-pluralize>)
+                </small>
+            </div>
+            <div class="SDS-simple-col-4-20">
+                <small>
+                    {{offer.LowestFare.Fare | isoCurrency:offer.CurrencyCode:0}}
+                    <!-- WARN: below we assume that the controller of the parent view where this very view is included, exports such searchOfferClicked callback.
+                    Or that callback is exported on parameter object (if we are within isolate scope).
+                    Not creating separate directive with isolated scope from this view, as this view is passed into popover, google map info view, which only way to communicate with this template is still only thru (parent) scope.-->
+                    <div>
+                        <a ng-init="searchOfferClickedFn=searchOfferClicked || parameter.searchOfferClicked"
+                       ng-click="searchOfferClickedFn(
+                        {
+                            searchCriteria: {
+                                origin: offer.origin,
+                                destination: parameter.destination,
+                                departureDateTime: offer.departureDateTime,
+                                returnDateTime: offer.returnDateTime
+                            }
+                        })">Search
+                        </a>
+                    </div>
+                </small>
+            </div>
+        </li>
+    </ul>
+</div>

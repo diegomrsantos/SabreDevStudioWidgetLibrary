@@ -1,0 +1,44 @@
+$numberOfSimpleGridColumns: 20 !default;
+$simpleGridGutterWidth: 4px;
+
+@mixin createGridRow {
+  .SDS-simple-row {
+    &:before, &:after {
+      display: table;
+      content: " ";
+    }
+    &:after {
+      clear: both;
+    }
+  }
+}
+
+@mixin createGridColumns {
+  @for $i from 1 through $numberOfSimpleGridColumns {
+    .SDS-simple-col-#{$i}-#{$numberOfSimpleGridColumns} {
+      float: left;
+      width: percentage($i/$numberOfSimpleGridColumns);
+    }
+  }
+}
+
+@mixin createGridColumnsPaddings {
+  @for $i from 1 through $numberOfSimpleGridColumns {
+    .SDS-simple-col-#{$i}-#{$numberOfSimpleGridColumns} {
+      padding-left: #{$simpleGridGutterWidth / 2};
+      padding-right: #{$simpleGridGutterWidth / 2};
+
+      &:first-child {
+        padding-left: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+@include createGridRow;
+@include createGridColumns;
+@include createGridColumnsPaddings;

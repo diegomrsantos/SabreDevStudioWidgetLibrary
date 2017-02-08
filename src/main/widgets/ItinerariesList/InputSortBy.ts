@@ -52,9 +52,11 @@ define([
 
                         var lastSelectedValueIdx;
 
+                        var buttonLabelElement;
+
                         function setSelectDropdownValue(dropdownMenuElement, selectedValueLabel, selectedValueIdx) {
                             var buttonLabelTextSelector = "button span.SDSDropdownLabelText";
-                            var buttonLabelElement = angular.element(dropdownMenuElement.parentNode.querySelectorAll(buttonLabelTextSelector));
+                            buttonLabelElement = angular.element(dropdownMenuElement.parentNode.querySelectorAll(buttonLabelTextSelector));
 
                             buttonLabelElement.text(selectedValueLabel);
                             buttonLabelElement.val(selectedValueLabel);
@@ -67,18 +69,28 @@ define([
                             return (selectedValueIdx === lastSelectedValueIdx);
                         }
 
-                        element[0].querySelector('.dropdown-menu').addEventListener('click', function(event) {
+                        function onClickHandler(event) {
                             var clickedElement = event.target;
                             var selectedValueLabel = clickedElement.textContent;
                             var selectedValueIdx = parseInt(clickedElement.getAttribute('data-criterion-index'));
                             if (isAlreadySelectedValue(selectedValueIdx)) {
                                 return;
                             }
-                            var dropdownMenuElement = this;
-                            setSelectDropdownValue(dropdownMenuElement, selectedValueLabel, selectedValueIdx);
+                            /*jshint validthis:true */
+                            var dropDownMenu = this;
+                            setSelectDropdownValue(dropDownMenu, selectedValueLabel, selectedValueIdx);
                             lastSelectedValueIdx = selectedValueIdx;
-                        }, true);
+                        }
 
+                        const dropDownMenuDomElement = element[0].querySelector('.dropdown-menu');
+
+                        dropDownMenuDomElement.addEventListener('click', onClickHandler, true);
+
+                        scope.$on('$destroy', function() {
+                            dropDownMenuDomElement.removeEventListener('click', onClickHandler, true);
+                            delete scope.selectedFirstSortCriterion;
+                            buttonLabelElement = undefined;
+                        });
                     }
                 };
             });

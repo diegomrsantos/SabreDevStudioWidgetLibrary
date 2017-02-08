@@ -9,6 +9,8 @@ define(['moment'], function (moment) {
 
     var CURRENCY_REGEX = new RegExp("^[A-Z]{3}$");
     var AIRPORT_OR_CITY_CODE_REGEX = new RegExp("^[A-Z]{3}$");
+    var NON_ZERO_POSITIVE_INTEGER_REGEX = new RegExp("^[1-9]\\d*$");
+    var PERCENTAGE_VALUE_REGEX = new RegExp("^[1-9][0-9]?$|^100$");
 
     var defined = function(arg, err?) {
         if (typeof arg === 'undefined') {
@@ -34,6 +36,8 @@ define(['moment'], function (moment) {
     };
 
     return {
+        NON_ZERO_POSITIVE_INTEGER_REGEX: NON_ZERO_POSITIVE_INTEGER_REGEX,
+        PERCENTAGE_VALUE_REGEX: PERCENTAGE_VALUE_REGEX,
         notEmpty: notEmpty,
         defined: defined,
         definedAndMatches: definedAndMatches,

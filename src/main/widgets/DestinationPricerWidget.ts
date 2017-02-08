@@ -6,6 +6,7 @@ define([
         , 'widgets/SDSWidgets'
         , 'widgets/BaseController'
         , 'webservices/inspirational/DestinationPricerDataService'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -15,6 +16,7 @@ define([
         , SDSWidgets
         , BaseController
         , DestinationPricerDataServiceSrc
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -32,10 +34,10 @@ define([
             };
 
             BaseController.call(this, {
-                scope: $scope
-                , searchService: searchService
-                , newSearchCriteriaEvent: newInspirationalSearchCriteriaEvent
-                , searchCriteriaBroadcastingService: searchCriteriaBroadcastingService
+                scope: $scope,
+                searchService: searchService,
+                newSearchCriteriaEvent: newInspirationalSearchCriteriaEvent,
+                searchCriteriaBroadcastingService: searchCriteriaBroadcastingService
             });
 
             this.saveLastSearchCriteria = function (searchCriteria) {
@@ -72,7 +74,13 @@ define([
                 ) {
                 return {
                     restrict: 'EA',
-                    scope: true,
+                    scope: {
+                        searchLinkEnabled: '@?',
+                        offerClicked: '&?',
+                        searchStartedCallback: '&?',
+                        searchSuccessCallback: '&?',
+                        searchErrorCallback: '&?'
+                    },
                     templateUrl: '../widgets/view-templates/widgets/DestinationPricer.tpl.html',
                     controller: 'DestinationPricerCtrl',
                     controllerAs: 'ctrl',
@@ -92,7 +100,7 @@ define([
                                 controller.processSearchCriteria(searchCriteria);
                             }
                         }
-
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
                     }
                 };
             });

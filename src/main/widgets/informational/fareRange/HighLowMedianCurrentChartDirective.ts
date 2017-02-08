@@ -29,7 +29,7 @@ define([
 
                         scope.chartConfig = {
                             topLeftOffset: {
-                                x: 150,
+                                x: 30,
                                 y: 20
                             },
                             bar: {

@@ -1,0 +1,32 @@
+<div class="SDSWidget SDSTilesThemedDestinationFinderWidget SDSResponsiveElement" ng-show="isAnyDataToDisplayAvailable()">
+    <div class="SDS-row">
+        <div class="SDS-col-element-md-6 SDS-col-element-xl-4 SDS-col-element-4xl-3"
+             ng-repeat="offersForOneDestination in model.pricesForDestinationsGrouped track by offersForOneDestination.destination">
+            <div href="#" class="thumbnail">
+                <div class="SDSAspectRatioEnforcer"
+                     style="background-image: url('../widgets/img/destinations/{{offersForOneDestination.destination}}.jpg'), url('../widgets/img/destinations/general_city.jpg')">
+                </div>
+                <div class="caption">
+                    <strong class="pull-left SDSCityLabel SDSHideOverflow">
+                        {{offersForOneDestination.destination | cityFullName}}
+                    </strong>
+                    <strong class="pull-right text-right SDSPriceLabel SDSHideOverflow">
+                        from {{offersForOneDestination.lowestFare.amount | isoCurrency:offersForOneDestination.lowestFare.currency}}
+                    </strong>
+                    <div class="clearfix"></div>
+                    <span class="pull-right"
+                          ng-init="parameter=offersForOneDestination"><!-- ng-init is needed to set 'parameter' model value for the included, shared template. And specific model value name is required because that template is also used (DRY) by other directive which enforces that particular name (ui-gmap-windowm and it is not overrideable)-->
+                        <a href=""
+                           ns-popover
+                           ns-popover-template="../widgets/view-templates/partials/DestinationFinderOfferDetailsInfoView.tpl.html"
+                           ns-popover-placement="top"
+                           ns-popover-timeout="0.2">
+                            Show flights
+                        </a>
+                    </span>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

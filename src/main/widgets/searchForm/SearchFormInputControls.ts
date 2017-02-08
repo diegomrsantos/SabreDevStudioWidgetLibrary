@@ -6,6 +6,7 @@ define([
         , 'angular_bootstrap'
         , 'widgets/SDSWidgets'
         , 'widgets/searchForm/AirportNameBestSuggestionComparator'
+        , 'widgets/searchForm/flexibleDepartureReturnDates.drv'
     ],
     function (
           _
@@ -15,6 +16,8 @@ define([
         , angular_bootstrap
         , SDSWidgets
         , AirportNameBestSuggestionComparator
+        , FlexibleDepartureReturnDates
+        , TimePickerPopup
     ) {
         'use strict';
 
@@ -29,6 +32,7 @@ define([
         }
 
         return angular.module('sdsWidgets')
+            .directive('flexibleDepartureReturnDates', FlexibleDepartureReturnDates)
             .directive('selectPreferredCabin', function () {
                 return {
                     replace: true,
@@ -38,7 +42,29 @@ define([
                     templateUrl: '../widgets/view-templates/partials/PreferredCabinSelect.tpl.html'
                 };
             })
-            .directive('selectPreferredAirlines', [
+            .directive('selectBags', function () {
+                return {
+                    replace: true,
+                    scope: {
+                        bagsRequested: '='
+                    },
+                    templateUrl: '../widgets/view-templates/partials/SelectBags.tpl.html',
+                    link: function (scope) {
+                        scope.bagsSelection = [0, 1, 2, 3];
+                        scope.bagsRequested = scope.bagsSelection[1];
+                    }
+                };
+            })
+            .filter('bags', function () {
+                return function (bagsAmount) {
+                    switch (bagsAmount) {
+                        case 0: return 'No bags';
+                        case 1: return '1 bag';
+                        default: return bagsAmount + ' bags';
+                    }
+                }
+            })
+            .directive('selectAirline', [
                     'AirlineLookupDataService'
                     , '$timeout'
                 , function (
@@ -48,36 +74,68 @@ define([
 
                 return {
                     scope: {
-                        preferredAirlines: '='
+                        //Expected to be an Object
+                        airline: '=',
                     },
-                    templateUrl: '../widgets/view-templates/partials/PreferredAirlinesSelect.tpl.html',
+                    templateUrl: '../widgets/view-templates/partials/SelectAirline.tpl.html',
                     link: function (scope) {
 
-                        scope.preferredAirlinesInternal = {
-                            selected: []
+                        scope.airlineInternal = {
+                            selected: {}
                         };
 
                         AirlineLookupDataService.getAirlineAndAirlineCodesList().then(function (airlineAndAirlineCodesList) {
                             scope.allAirlines = airlineAndAirlineCodesList;
                         });
 
-                        scope.$watchCollection('preferredAirlinesInternal.selected', function (newArr) {
-                            scope.preferredAirlines.selected = newArr.map((obj) => obj.AirlineCode);
+                        scope.$watch('airlineInternal.selected', function (selected) {
+                            scope.airline = selected.AirlineCode;
                         });
                     }
                 };
             }])
+            .directive('selectMultipleAirlines', [
+                'AirlineLookupDataService'
+                , '$timeout'
+                , function (
+                    AirlineLookupDataService
+                    , $timeout
+                ) {
+
+                    return {
+                        scope: {
+                            //Expected to be an Array
+                            airlines: '=',
+                        },
+                        templateUrl: '../widgets/view-templates/partials/SelectMultipleAirlines.tpl.html',
+                        link: function (scope) {
+
+                            scope.airlinesInternal = {
+                                selected: []
+                            };
+
+                            AirlineLookupDataService.getAirlineAndAirlineCodesList().then(function (airlineAndAirlineCodesList) {
+                                scope.allAirlines = airlineAndAirlineCodesList;
+                            });
+
+                            scope.$watchCollection('airlinesInternal.selected', function (selected) {
+                                scope.airlines.selected = selected.map((obj) => obj.AirlineCode);
+                            });
+                        }
+                    };
+                }])
             .directive('inputDate', [
                 function () {
                     return {
+                        require: 'ngModel',
                         replace: true,
                         scope: {
                               isDisabled: '@'
                             , required: '@'
                             , dateFormat: '@'
-                            , minDate: '@'
-                            , date: '='
+                            , minDate: '='
                             , onDateChange: '&'
+                            , ngModel: '='
                         },
                         templateUrl: '../widgets/view-templates/partials/InputDate.tpl.html',
                         link: function (scope) {
@@ -242,7 +300,7 @@ define([
                         var DEFAULT_PLUS_MINUS_DAYS_MAX_DAYS = 3;
                         var maxDays = parseInt(scope.maxDays) || DEFAULT_PLUS_MINUS_DAYS_MAX_DAYS;
 
-                        var plusMinusDaysList = [];
+                        var plusMinusDaysList:any[] = [];
                         plusMinusDaysList.push('');
                         for (var i = 1; i <= maxDays; i++) {
                             plusMinusDaysList.push(i)

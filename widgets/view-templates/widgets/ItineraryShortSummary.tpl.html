@@ -1,19 +1,22 @@
 <div>
-    <div class="SDS-row SDSLegShortSummary">
+    <div class="SDS-row SDSLegShortSummary" ng-click="itemClicked(itinerary.id)">
         <div class="SDS-col-element-xl-3">
-            <airline-logo airline-code="{{itinerary.getFirstLeg().getFirstFlightMarketingAirline()}}"></airline-logo>
-            {{itinerary.getFirstLeg().getFirstFlightMarketingAirline() | airlineFullName}}
+            <a>
+                <img class="SDSAirlineLogo" ng-src="../widgets/img/airlineLogos/{{itinerary.getFirstLeg().getFirstFlightMarketingAirline()}}.PNG"
+                     fallback-src="../widgets/img/airlineLogos/generic_airline.PNG">
+                {{itinerary.getFirstLeg().getFirstFlightMarketingAirline() | airlineFullName}}
+            </a>
         </div>
 
         <div class="SDS-col-element-xl-9">
             <ul class="list-inline list-unstyled">
-                <li class="SDSTravelDateLong">{{itinerary.getFirstLeg().getLegDepartureDateTime().format('ddd, DD MMM')}}</li>
-                <li class="SDSTravelTime">{{itinerary.getFirstLeg().getLegDepartureDateTime().format('HH:mm')}}</li>
-                <li class="SDSAirport badge SDSBadgeInfo">{{itinerary.getFirstLeg().getLegDepartureAirport()}}</li>
+                <li class="SDSTravelDateLong">{{itinerary.getFirstLeg().departureDateTime.format('ddd, DD MMM')}}</li>
+                <li class="SDSTravelTime">{{itinerary.getFirstLeg().departureDateTime.format('HH:mm')}}</li>
+                <li class="SDSAirport badge SDSBadgeInfo">{{itinerary.getFirstLeg().departureAirport}}</li>
                 <li class="SDSIconAirplaneArrow"></li>
-                <!--<li class="SDSTravelDateLong">{{itinerary.getFirstLeg().getLegArrivalDateTime().format('ddd, DD MMM' )}}</li>-->
-                <li class="SDSTravelTime">{{itinerary.getFirstLeg().getLegArrivalDateTime().format('HH:mm')}}</li>
-                <li class="SDSAirport badge SDSBadgeInfo">{{itinerary.getFirstLeg().getLegArrivalAirport()}}</li>
+                <!--<li class="SDSTravelDateLong">{{::itinerary.getFirstLeg().arrivalDateTime.format('ddd, DD MMM' )}}</li>-->
+                <li class="SDSTravelTime">{{itinerary.getFirstLeg().arrivalDateTime.format('HH:mm')}}</li>
+                <li class="SDSAirport badge SDSBadgeInfo">{{itinerary.getFirstLeg().arrivalAirport}}</li>
                 <!--<button type="button" class="SDSCheckoutButton btn btn-primary btn-xs pull-right">Select</button>-->
             </ul>
         </div>

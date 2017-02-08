@@ -1,6 +1,13 @@
-@import "SDSCommon";
-
 // make label take 100% width of containing element, so that price can be pulled to very right
 .SDSDiscreteFilterValueLabel {
   width: 100%;
+}
+
+.SDSValuesFilter .panel {
+  margin-bottom: 8px;
+}
+
+.SDSRangeFilter {
+  padding-right: 6px;
+  padding-left: 6px;
 }

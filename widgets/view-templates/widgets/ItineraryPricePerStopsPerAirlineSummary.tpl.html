@@ -1,8 +1,8 @@
 <div class="panel panel-default" ng-if="isAnyDataToDisplayAvailable()">
-    <div class="panel-heading text-center">
+    <div class="panel-heading text-center SDS-responsive-panel-heading">
         <h4 class="panel-title">Lowest prices by airline and number of stops</h4>
     </div>
-    <div class="panel-body">
+    <div class="panel-body SDS-responsive-panel-body">
         <div class="table-responsive">
             <table class="SDSPricePerStopsPerAirlineSummaryTable table table-hover table-bordered table-condensed">
                 <thead>
@@ -17,29 +17,29 @@
                 <tbody>
                     <tr ng-if="summary.totalSummary.nonStopLowestPrice">
                         <td>Non-stop</td>
-                        <td class="success">
-                            {{summary.totalSummary.nonStopLowestPrice | currency:summary.totalSummary.totalFareCurrency}}
+                        <td class="success" ng-click="itemClicked(summary.totalSummary.nonStopLowestPriceItineraryId)">
+                            <a>{{summary.totalSummary.nonStopLowestPrice | isoCurrency:summary.totalSummary.totalFareCurrency}}</a>
                         </td>
-                        <td ng-repeat="item in summary.airlineSummaries" ng-class="{success: item.isCheapestNonStop}">
-                            {{item.nonStopLowestPrice | currency:summary.totalSummary.totalFareCurrency}}
+                        <td ng-repeat="item in summary.airlineSummaries" ng-class="{success: item.isCheapestNonStop}" ng-click="itemClicked(item.nonStopLowestPriceItineraryId)">
+                            <a>{{item.nonStopLowestPrice | isoCurrency:summary.totalSummary.totalFareCurrency}}</a>
                         </td>
                     </tr>
                     <tr ng-if="summary.totalSummary.oneStopLowestPrice">
                         <td>1 Stop</td>
-                        <td class="success">
-                            {{summary.totalSummary.oneStopLowestPrice | currency:summary.totalSummary.totalFareCurrency}}
+                        <td class="success" ng-click="itemClicked(summary.totalSummary.oneStopLowestPriceItineraryId)">
+                            <a>{{summary.totalSummary.oneStopLowestPrice | isoCurrency:summary.totalSummary.totalFareCurrency}}</a>
                         </td>
-                        <td ng-repeat="item in summary.airlineSummaries" ng-class="{success: item.isCheapestOneStopLowestPrice}">
-                            {{item.oneStopLowestPrice | currency:summary.totalSummary.totalFareCurrency}}
+                        <td ng-repeat="item in summary.airlineSummaries" ng-class="{success: item.isCheapestOneStopLowestPrice}" ng-click="itemClicked(item.oneStopLowestPriceItineraryId)">
+                            <a>{{item.oneStopLowestPrice | isoCurrency:summary.totalSummary.totalFareCurrency}}</a>
                         </td>
                     </tr>
                     <tr ng-if="summary.totalSummary.twoAndMoreStopsLowestPrice">
                         <td>2+ Stops</td>
-                        <td class="success">
-                            {{summary.totalSummary.twoAndMoreStopsLowestPrice | currency:summary.totalSummary.totalFareCurrency}}
+                        <td class="success" ng-click="itemClicked(summary.totalSummary.twoAndMoreStopsLowestPriceItineraryId)">
+                            <a>{{summary.totalSummary.twoAndMoreStopsLowestPrice | isoCurrency:summary.totalSummary.totalFareCurrency}}</a>
                         </td>
-                        <td ng-repeat="item in summary.airlineSummaries" ng-class="{success: item.isCheapestTowOrMoreStopsLowestPrice}">
-                            {{item.twoAndMoreStopsLowestPrice | currency:summary.totalSummary.totalFareCurrency}}
+                        <td ng-repeat="item in summary.airlineSummaries" ng-class="{success: item.isCheapestTowOrMoreStopsLowestPrice}" ng-click="itemClicked(item.twoAndMoreStopsLowestPriceItineraryId)">
+                            <a>{{item.twoAndMoreStopsLowestPrice | isoCurrency:summary.totalSummary.totalFareCurrency}}</a>
                         </td>
                     </tr>
                 </tbody>

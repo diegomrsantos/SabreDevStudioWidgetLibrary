@@ -1,4 +1,12 @@
-@import "SDSCommon";
+@import "SDSConstants";
+
+@mixin backgroundIcon($url, $size) {
+  background: url($url) no-repeat;
+  width: $size;
+  height: $size;
+  margin-left: 2px;
+  margin-right: 2px;
+}
 
 .SDSLegList {
   border-right: $itemsSeparatingLineStyle;
@@ -27,19 +35,19 @@
 }
 
 .SDSIconRedEye {
-  content:url("../img/icons/moon_16_16.png");
+  @include backgroundIcon("../img/icons/moon_16_16.png", 16px);
 }
 
 .SDSIconHurryUpShortConnection {
-  content:url("../img/icons/running_16_16.png");
+  @include backgroundIcon("../img/icons/running_16_16.png", 16px);
 }
 
 .SDSIconLongConnection {
-  content:url("../img/icons/clock_16_16.png");
+  @include backgroundIcon("../img/icons/clock_16_16.png", 16px);
 }
 
 .SDSIconFewSeatsLeft {
-  content:url("../img/icons/attention_16_16.png");
+  @include backgroundIcon("../img/icons/attention_16_16.png", 16px);
 }
 
 .SDSLegSummary {
@@ -47,7 +55,7 @@
 }
 
 .SDSLegShortSummary {
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .SDSFlightDepartureOrArrival {
@@ -86,6 +94,14 @@
   margin-bottom: 0.4rem;
 }
 
+.SDSPricePerStopsPerAirlineSummaryTable {
+  margin-bottom: 4px;
+}
+
 .SDSPricePerStopsPerAirlineSummaryTable td {
   white-space:nowrap;
+}
+
+.SDSItineraryIconsLegendTemplate {
+  padding: 7px;
 }

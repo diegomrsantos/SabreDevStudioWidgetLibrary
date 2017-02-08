@@ -14,9 +14,16 @@
 <body>
     <div id="mainPageContainer" class="container-fluid">
         <partial command="include('partials/navigation.html')"></partial>
+
         <search-form class="embeddedWidget" hide-fields="IsPlusMinus3DaysFlexible" selectable-airports-for-this-pos-only="1"></search-form>
-        <itinerary-list class="embeddedWidget" id="ItineraryList2" active-search="true" active-search-web-service="instaflights"></itinerary-list>
+
+        <itinerary-list class="embeddedWidget" id="ItineraryList2"
+                        active-search="true" active-search-web-service="instaflights">
+        </itinerary-list>
+
         <error-display class="embeddedWidget"></error-display>
+        <network-error-display></network-error-display>
+		<validation-error-display></validation-error-display>
     </div>
 
     <script data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>

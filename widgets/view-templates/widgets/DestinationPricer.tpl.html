@@ -1,11 +1,11 @@
 <div class="SDSWidget SDSResponsiveElement SDSInspirationalList">
         <div class="panel panel-default" ng-show="ctrl.isAnyDataToDisplayAvailable()">
 
-            <div class="panel-heading text-center">
+            <div class="panel-heading text-center SDS-responsive-panel-heading">
                 <h4 class="panel-title">Cheapest Flights To Destination</h4>
             </div>
 
-            <div class="panel-body">
+            <div class="panel-body SDS-responsive-panel-body">
 
                 <ul class="list-unstyled SDSTopLevelList">
                     <div class="SDS-row">
@@ -26,27 +26,43 @@
                                             <div class="SDS-col-element-xs-5">
                                                 <ul class="list-inline list-unstyled">
                                                     <li>
-                                                        <div><strong>{{offerItem.OriginLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</strong></div>
+                                                        <div><strong>{{offerItem.OriginLocation | cityFullName:ctrl.lastRequestPosCountryOverride}}</strong></div>
                                                     </li>
                                                     <li>
                                                         <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
                                                     </li>
                                                     <li>
-                                                        <strong>{{ctrl.modelPricesToDestination.DestinationLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</strong>
+                                                        <strong>{{ctrl.modelPricesToDestination.DestinationLocation | cityFullName:ctrl.lastRequestPosCountryOverride}}</strong>
                                                     </li>
                                                 </ul>
                                             </div>
                                             <div class="SDS-col-element-xs-3">
                                                 <div class="pull-right">
-                                                    <small class="SDSPaddingSmall">from </small><strong>{{offerItem.LowestFare.Fare | currency:offerItem.CurrencyCode}}</strong>
+                                                    <small class="SDSPaddingSmall">from </small><strong>{{offerItem.LowestFare.Fare | isoCurrency:offerItem.CurrencyCode}}</strong>
                                                 </div>
                                                 <div class="clearfix"></div>
-                                                <a class="pull-right" href=""
-                                                   popover-template="'DestinationPricerDetailsPopover'"
-                                                   popover-trigger="mouseenter"
-                                                   popover-placement="bottom"
-                                                   popover-append-to-body="true">Details
-                                                </a>
+
+                                                <div>
+                                                        <button type="button" class="btn-link pull-right"
+                                                           ns-popover
+                                                           ns-popover-template="DestinationPricerDetailsPopover"
+                                                           ns-popover-trigger="mouseenter"
+                                                           ns-popover-placement="bottom"
+                                                           ns-popover-timeout="0.2">Details
+                                                        </button>
+                                                        <button type="button" class="btn-link pull-right" ng-if="::searchLinkEnabled"
+                                                           ng-click="offerClicked(
+                                                            {
+                                                                searchCriteria: {
+                                                                    origin: offerItem.OriginLocation,
+                                                                    destination: ctrl.modelPricesToDestination.DestinationLocation,
+                                                                    departureDateTime: offerItem.DepartureDateTime,
+                                                                    returnDateTime: offerItem.ReturnDateTime
+                                                                }
+                                                            })">Search
+                                                        </button>
+                                                </div>
+                                                <div class="clearfix"></div>
                                             </div>
                                         </div>
                                 </div>
@@ -61,7 +77,9 @@
 </div>
 
 <script type="text/ng-template" id="DestinationPricerDetailsPopover">
-    <ul class="list-inline list-unstyled">
+    <div class="SDSDestinationPricerDetailsPopover">
+    <span class="triangle"></span>
+    <ul class="list-unstyled">
         <li>
             <small>Departure {{offerItem.DepartureDateTime | makeMomentAndFormat:'ddd, DD MMM'}} from {{offerItem.OriginLocation | cityAndAirportFullName:ctrl.lastRequestPosCountryOverride}}</small><!-- format: Sun, 05 Dec-->
         </li>

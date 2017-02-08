@@ -1,0 +1,60 @@
+$numberOfGridColumns: 12 !default;
+$columnSizeSymbols: xs sm md lg;
+
+@mixin createClearGutterUtil {
+  @each $sizeSymbol in $columnSizeSymbols {
+    @for $i from 1 through $numberOfGridColumns {
+      .col-#{$sizeSymbol}-#{$i}.SDS-clear-gutter {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+@mixin createClearLeftGutterUtil {
+  @each $sizeSymbol in $columnSizeSymbols {
+    @for $i from 1 through $numberOfGridColumns {
+      .col-#{$sizeSymbol}-#{$i}.SDS-clear-left-gutter {
+        padding-left: 0;
+      }
+    }
+  }
+}
+
+@mixin createClearRightGutterUtil {
+  @each $sizeSymbol in $columnSizeSymbols {
+    @for $i from 1 through $numberOfGridColumns {
+      .col-#{$sizeSymbol}-#{$i}.SDS-clear-right-gutter {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+@include createClearGutterUtil;
+@include createClearLeftGutterUtil;
+@include createClearRightGutterUtil;
+
+@mixin minimizeLeftGutter {
+  @each $sizeSymbol in $columnSizeSymbols {
+    @for $i from 1 through $numberOfGridColumns {
+      .col-#{$sizeSymbol}-#{$i}.SDS-minimize-left-gutter {
+        padding-left: 5px;
+      }
+    }
+  }
+}
+
+@mixin minimizeRightGutter {
+  @each $sizeSymbol in $columnSizeSymbols {
+    @for $i from 1 through $numberOfGridColumns {
+      .col-#{$sizeSymbol}-#{$i}.SDS-minimize-right-gutter {
+        padding-right: 5px;
+      }
+    }
+  }
+}
+
+@include minimizeLeftGutter;
+@include minimizeRightGutter;

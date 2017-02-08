@@ -1,6 +1,8 @@
 .idea/
 .sass-cache/
+bower_components/
 build/
+build-js/
 node_modules/
 rqrs/
 stylesheets/

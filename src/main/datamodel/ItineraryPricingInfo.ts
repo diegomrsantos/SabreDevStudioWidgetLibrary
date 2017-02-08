@@ -29,7 +29,7 @@ define([
 
             this.OBFees = [];
 
-            this.baggageAllowance = undefined;
+            this.baggageAllowance = new SegmentBaggageAllowance();
 
             /* two level map of leg and segment indices into segment (flight) cabin code.
              * For example: this.segmentCabins[1][2] will refer to the cabin of the leg with index 1 (second leg) and segment with index 2 (third segment).
@@ -130,7 +130,6 @@ define([
          * @param baggageAllowanceForSegments
          */
         ItineraryPricingInfo.prototype.setBaggageAllowance = function (baggageAllowanceForSegments) {
-            this.baggageAllowance = new SegmentBaggageAllowance();
             var that = this;
             baggageAllowanceForSegments.forEach(function (segmentsAllowance) {
                 segmentsAllowance.segmentsAbsoluteIndexes.forEach(function (absoluteIdx) {
@@ -141,11 +140,15 @@ define([
         };
 
         ItineraryPricingInfo.prototype.getBaggageAllowance = function (legIdx, segmentIdx) {
-            return this.baggageAllowance && this.baggageAllowance.getSegmentAllowance(legIdx, segmentIdx);
+            return this.baggageAllowance.getSegmentAllowance(legIdx, segmentIdx);
+        };
+
+        ItineraryPricingInfo.prototype.getMinBaggageAllowance = function () {
+            return this.baggageAllowance.getMinBaggageAllowance();
         };
 
         ItineraryPricingInfo.prototype.getUniqueBaggageAllowance = function () {
-            return this.baggageAllowance && this.baggageAllowance.uniqueBaggageAllowance();
+            return this.baggageAllowance.uniqueBaggageAllowance();
         };
 
         /**
@@ -168,6 +171,18 @@ define([
                 , uniqueMeals: this.getUniqueMeals()
                 , uniqueBaggageAllowance: this.getUniqueBaggageAllowance()
             };
+        };
+
+        ItineraryPricingInfo.prototype.equals = function (other) {
+            return _.isEqual(this.legsSegmentCounts, other.legsSegmentCounts)
+                && _.isEqual(this.nonRefundableIndicator, other.nonRefundableIndicator)
+                && _.isEqual(this.OBFees, other.OBFees)
+                && this.baggageAllowance.equals(other.baggageAllowance)
+                && _.isEqual(this.segmentCabins, other.segmentCabins)
+                && _.isEqual(this.segmentSeatsRemaining, other.segmentSeatsRemaining)
+                && _.isEqual(this.segmentMeals, other.segmentMeals)
+                && _.isEqual(this.fareAmounts, other.fareAmounts)
+                && _.isEqual(this.summaries, other.summaries);
         };
 
         return ItineraryPricingInfo;

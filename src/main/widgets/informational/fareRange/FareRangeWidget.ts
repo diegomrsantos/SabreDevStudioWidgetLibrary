@@ -5,9 +5,10 @@ define([
         , 'angular'
         , 'angular_bootstrap'
         , 'widgets/SDSWidgets'
-        , 'datamodel/SearchCriteria'
+        , 'datamodel/search/SearchCriteriaFactory'
         , 'widgets/informational/fareRange/HighLowMedianCurrentChartDirective'
         , 'webservices/informational/FareRangeDataService'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -16,9 +17,10 @@ define([
         , angular
         , angular_bootstrap
         , SDSWidgets
-        , SearchCriteria
+        , SearchCriteriaFactory
         , HighLowMedianCurrentChartDirective
         , FareRangeDataServiceSrc
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -44,8 +46,12 @@ define([
                     // main business model object
                     $scope.fareRangeSummary = {};
 
+                    if ($scope.searchCriteria) {
+                        processSearchCriteria($scope.searchCriteria);
+                    }
+
                     if ($scope.origin && $scope.destination && $scope.departureDate && $scope.returnDate) {
-                        var searchCriteria = SearchCriteria.prototype.buildRoundTripTravelSearchCriteria($scope.origin, $scope.destination, $scope.departureDate, $scope.returnDate);
+                        var searchCriteria = SearchCriteriaFactory.buildRoundTripTravelSearchCriteria($scope.origin, $scope.destination, $scope.departureDate, $scope.returnDate);
                         processSearchCriteria(searchCriteria);
                     }
 
@@ -102,13 +108,13 @@ define([
                         if (_.isUndefined($scope.currentLowestFare)) { // customer did not define any lowest fare (the cutoff), then always show
                             return true;
                         }
-                        if (medianFareLowerThanCurrentLowestFare()) {
+                        if (currentLowestFareLessThanMedianFare()) {
                             return true;
                         }
                         return false;
                     };
 
-                    function medianFareLowerThanCurrentLowestFare() {
+                    function currentLowestFareLessThanMedianFare() {
                         return ($scope.currentLowestFare < $scope.fareRangeSummary.fareDataForRequestedDates.MedianFare) && ($scope.currentLowestFareCurrency ===  $scope.fareRangeSummary.fareDataForRequestedDates.CurrencyCode);
                     }
 
@@ -116,8 +122,10 @@ define([
             .directive('fareRange', function () {
                 return {
                     //replace: true,
+                    transclude: true,
                     scope: {
-                          origin: '@?'
+                          searchCriteria: '=?'
+                        , origin: '@?'
                         , destination: '@?'
                         , departureDate: '@?'
                         , returnDate: '@?'
@@ -126,7 +134,10 @@ define([
                         , rangeDays: '@?'
                     },
                     templateUrl: '../widgets/view-templates/widgets/FareRangeWidget.tpl.html',
-                    controller: 'FareRangeCtrl'
+                    controller: 'FareRangeCtrl',
+                    link: function (scope, element) {
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
+                    }
                 };
             })
             .factory('FareRangeSummaryService', function () { // provides summary recommendation whether to buy now or not, based on Fare Range service (based on what the others paid). Implements specific business recommendation logic.

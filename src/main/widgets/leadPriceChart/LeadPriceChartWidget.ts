@@ -8,6 +8,7 @@ define([
         , 'widgets/GlobalChartsConfiguration'
         , 'datamodel/ShoppingData'
         , 'webservices/common/searchStrategyFactories/DaysRangeSearchStrategyFactory'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -19,6 +20,7 @@ define([
         , GlobalChartsConfiguration
         , ShoppingData
         , DaysRangeSearchStrategyFactorySrc
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -126,9 +128,14 @@ define([
                     return;
                 }
                 var date = barClicked.label;
-                DateSelectedBroadcastingService.newSearchCriteria = this.lastSearchCriteria.cloneWithDatesAdjustedToOtherDepartureDate(date);
+                var newSearchCriteria = this.lastSearchCriteria.cloneWithDatesAdjustedToOtherDepartureDate(date);
+                DateSelectedBroadcastingService.newSearchCriteria = newSearchCriteria;
                 DateSelectedBroadcastingService.originalDataSourceWebService = searchService;
                 DateSelectedBroadcastingService.broadcast();
+                $scope.barClickedCallback({
+                    searchCriteria: newSearchCriteria,
+                    originalDataSourceWebService: searchService
+                });
             };
 
             function updateModelWithLeadPrices(leadPricesAndDateStrings) {
@@ -222,8 +229,13 @@ define([
                 return {
                     restrict: 'AE',
                     scope: {
-                          numberOfWeeksToDisplay: '@'
-                        , activeSearchWebService: '@'
+                        numberOfWeeksToDisplay: '@',
+                        activeSearchWebService: '@',
+                        searchCriteria: '=?',
+                        barClickedCallback: '&?',
+                        searchStartedCallback: '&?',
+                        searchSuccessCallback: '&?',
+                        searchErrorCallback: '&?'
                     },
                     replace: false,
                     templateUrl: '../widgets/view-templates/widgets/LeadPriceChartWidget.tpl.html',
@@ -233,7 +245,17 @@ define([
 
                         chartInstance = chartsFactory.createBarChart(element, chartData);
 
-                        controller.executeLifeSearchOnPredefinedCriteriaIfPresent(attrs.origin, attrs.destination, attrs.departureDate, attrs.returnDate);
+                        if (scope.searchCriteria) {
+                            controller.processSearchCriteria(scope.searchCriteria);
+                        } else {
+                            controller.executeLifeSearchOnPredefinedCriteriaIfPresent(attrs.origin, attrs.destination, attrs.departureDate, attrs.returnDate);
+                        }
+
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
+
+                        scope.$on('$destroy', function() {
+                            chartInstance.destroy();
+                        });
                     }
                 };
             }]);

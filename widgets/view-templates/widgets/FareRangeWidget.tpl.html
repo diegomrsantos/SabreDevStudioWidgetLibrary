@@ -1,10 +1,11 @@
-<div class="SDSFareRangeWidget panel panel-default" ng-if="isAnyDataToDisplayAvailable()">
-    <div class="panel-heading text-center">
+<div class="SDSFareRangeWidget panel panel-default SDS-panel" ng-if="isAnyDataToDisplayAvailable() && showFareRangeToCustomer()">
+    <div class="panel-heading SDS-panel-heading text-center">
         <h4 class="panel-title">Fare Range</h4>
     </div>
 
-    <div class="panel-body" ng-if="showFareRangeToCustomer()">
+    <div class="panel-body SDS-panel-body">
         <high-low-median-current-chart
+                class="center-block"
                 high-value="{{fareRangeSummary.overallMaximumFare}}"
                 high-text="Highest"
                 low-value="{{fareRangeSummary.overallMinimumFare}}"
@@ -16,6 +17,7 @@
                 values-filter="currency"
                 values-filter-arguments="{{fareRangeSummary.currency}}">
         </high-low-median-current-chart>
+        <ng-transclude></ng-transclude>
     </div>
 
 </div>

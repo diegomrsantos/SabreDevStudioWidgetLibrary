@@ -17,7 +17,7 @@
                                 {{day.day.format('D')}} <!-- day of month: 1 2 ... 30 31 -->
                         </div>
                         <div class="clearfix"></div>
-                        <div ng-show="day.price" class='SDSCalendarCellPrice text-center SDSPriceTier-{{day.priceTier}}'>{{day.price | currency:day.currency}}</div>
+                        <div ng-show="day.price" class='SDSCalendarCellPrice text-center SDSPriceTier-{{day.priceTier}}'>{{day.price | isoCurrency:day.currency}}</div>
                     </div>
             </td>
 

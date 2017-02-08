@@ -1,0 +1,14 @@
+<div class="SDSChangeOriginSelect well well-sm">
+    <form class="form-inline" name="changeOriginSelect" novalidate ng-submit="newOriginSelected()">
+        <div class="form-group">
+            <label for="changeOriginSelect_Origin" class="input-sm control-label">Your trip origin</label>
+            <div class="input-group input-group-sm">
+                <input-airport id="changeOriginSelect_Origin" name="Origin" class="form-control"
+                               required airport="origin" selectable-airports-for-this-pos-only="true"></input-airport>
+                <div class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

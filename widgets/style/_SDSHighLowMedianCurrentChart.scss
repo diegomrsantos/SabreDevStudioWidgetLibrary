@@ -1,11 +1,11 @@
-@import "SDSCommon";
+@import "SDSConstants";
 
 $dataLineColor: #000000;
 $legendLineColor: #000000;
 
 svg.SDSHighLowMedianCurrentChart {
 
-  width: 350px;
+  width: 200px;
   height: 150px;
 
   .SDSHLMCChartMainBar {

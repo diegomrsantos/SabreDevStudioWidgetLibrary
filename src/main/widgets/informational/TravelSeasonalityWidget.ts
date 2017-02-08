@@ -8,6 +8,7 @@ define([
         , 'widgets/BaseController'
         , 'widgets/GlobalChartsConfiguration'
         , 'webservices/informational/TravelSeasonalityDataService'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -19,6 +20,7 @@ define([
         , BaseController
         , GlobalChartsConfiguration
         , TravelSeasonalityDataServiceSrc
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -124,7 +126,11 @@ define([
                     chartsFactory
                 ) {
                 return {
-                    scope: true,
+                    scope: {
+                        searchStartedCallback: '&?',
+                        searchSuccessCallback: '&?',
+                        searchErrorCallback: '&?'
+                    },
                     templateUrl: '../widgets/view-templates/widgets/TravelSeasonalityWidget.tpl.html',
                     controller: 'TravelSeasonalityCtrl',
                     controllerAs: 'ctrl',
@@ -158,6 +164,11 @@ define([
                             };
                             controller.processSearchCriteria(searchCriteria);
                         }
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
+
+                        scope.$on('$destroy', function() {
+                            chartInstance.destroy();
+                        });
                     }
                 }
             }]);

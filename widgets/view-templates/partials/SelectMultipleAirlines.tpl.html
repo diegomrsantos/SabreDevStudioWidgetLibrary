@@ -1,0 +1,14 @@
+<ui-select multiple class="SDSPreferredAirlineSelect" ng-model="airlinesInternal.selected" theme="bootstrap" style="width: 100%;">
+    <!-- style must be inline and not within css class, as ui-select directive replaces this element and does not copy css class -->
+    <ui-select-match placeholder="type airline name or code">
+        {{$item.AirlineName}}
+    </ui-select-match>
+    <ui-select-choices repeat="airline in allAirlines | filter: $select.search | limitTo:30">
+        <!-- WARN: limitTo is very needed for performance reasons.
+        Without it the delay between clicking on the select and showing the list is even 2s on fast browser.
+        Anyway there is no need to show all the list, it will be filtered anyway after typing,
+        second, after typing only 2 characters the list is already constrained to z dozen or two: so 20 constraint does not limit too much.  -->
+        <span ng-bind-html="airline.AirlineName | highlight: $select.search"></span>
+        <small ng-bind-html="airline.AirlineCode | highlight: $select.search"></small>
+    </ui-select-choices>
+</ui-select>

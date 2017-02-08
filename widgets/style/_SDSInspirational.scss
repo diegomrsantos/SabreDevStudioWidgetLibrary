@@ -17,11 +17,7 @@
 
 }
 
-.SDSThemedDestinationFinderWidget {
-  .SDSThumbnailsContainer {
-    padding: 10px;
-  }
-
+.SDSTilesThemedDestinationFinderWidget {
   .SDSAspectRatioEnforcer {
     // base on http://stackoverflow.com/questions/12694919/cropping-the-image-to-aspect-ratio-in-bootstrap-responsive-grid
     position:relative;
@@ -41,4 +37,58 @@
   .SDSPriceLabel {
     width: 40%;
   }
+
+  .popover-content {
+    padding: 0;
+  }
+}
+
+.SDSMapThemedDestinationFinderWidget {
+  position: relative;
+
+  .SDSMapTopLegend {
+    position: absolute;
+    top: 0.7em;
+    z-index: 99;
+    background-color: white;
+    opacity: 0.9;
+
+    left: 200px;
+  }
+
+  .SDSMapTopLegend {
+    padding: 0.3em 0.4em;
+    border-radius: 0.1em;
+
+    .SDSMapTopLegendElement {
+      margin-left: 0.2em;
+      margin-right: 0.2em;
+
+      img {
+        margin-right: 0.1em;
+      }
+    }
+  }
+
+  .angular-google-map-container {
+    height: 400px;
+  }
+  .angular-google-map-container .gm-style-iw { // for info window
+    // all important to override google maps style on element level
+    left: 2px !important;
+    & > div {
+      overflow-x: hidden !important;
+    }
+
+  }
+}
+
+.SDSChangeOriginSelect {
+  button {
+    margin-left: 0.6rem;
+  }
+}
+
+.SDSDestinationPricerDetailsPopover {
+  padding: 5px;
 }

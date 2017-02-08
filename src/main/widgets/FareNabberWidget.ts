@@ -1,16 +1,20 @@
 define([
-          'angular'
+        'angular'
         , 'moment'
+        , 'util/LodashExtensions'
         , 'widgets/SDSWidgets'
         , 'webservices/fareNabber/FareNabberSubscriptionService'
         , 'widgets/searchForm/InputTimeOfDayRange'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           angular
         , moment
+        , __
         , SDSWidgets
         , FareNabberSubscriptionServiceSrc
         , InputTimeOfDayRange
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -19,24 +23,10 @@ define([
 
                 $scope.defaultOptions = {
                       earliestTravelStart: new Date()
-                    , subscriptionExpiry: moment().add(1, 'years').toDate()
+                    , subscriptionExpiry: moment().add(1, 'month').toDate()
                     , allowInterline: true
                 };
                 $scope.subscriptionExpiryDate = $scope.defaultOptions.subscriptionExpiry;
-
-                $scope.outboundTravelTimeRange = {
-                    departure: undefined,
-                    arrival: undefined
-                };
-                $scope.inboundTravelTimeRange = {
-                    departure: undefined,
-                    arrival: undefined
-                };
-
-                $scope.daysOfTravelPreference = {
-                    outbound: undefined,
-                    inbound: undefined
-                };
 
                 $scope.preferredAirlines = {
                     selected: []
@@ -48,22 +38,18 @@ define([
                           'subscriberEmail'
                         , 'origin'
                         , 'destination'
-                        , 'departureDate'
-                        , 'returnDate'
                         , 'passengerType'
                         , 'passengerCount'
+                        , 'preferences'
                         , 'directFlightsOnly'
                         , 'allowInterline'
                         , 'maximumAcceptablePrice'
                         , 'maximumAcceptablePriceCurrency'
                         , 'subscriptionExpiryDate'
-                        , 'outboundTravelTimeRange'
-                        , 'inboundTravelTimeRange'
-                        , 'daysOfTravelPreference'
                         , 'preferredAirlines'
                     ];
                     var fareNabberSubscriptionRequest = allProps.reduce(function (acc, curr) {
-                        if ($scope[curr]) {
+                        if (__.isDefined($scope[curr])) {
                             acc[curr] = $scope[curr];
                         }
                         return acc;
@@ -89,7 +75,7 @@ define([
                     , $rootScope
                 ) {
                 return {
-                    restrict: 'A',
+                    restrict: 'AE',
                     scope: {
                           origin: '@'
                         , destination: '@'
@@ -99,6 +85,7 @@ define([
                         , passengerCount: '@'
                         , maximumAcceptablePrice: '@'
                         , maximumAcceptablePriceCurrency: '@'
+                        , showEmailField: '@?'
                     },
                     templateUrl: '../widgets/view-templates/widgets/FareNabberWidget.tpl.html',
                     transclude: true,
@@ -113,8 +100,35 @@ define([
 
                         function parseDirectiveAttributes() {
                             const directiveAttributesDateFormat = moment.ISO_8601;
-                            scope.departureDate = moment(scope.predefinedDepartureDate, directiveAttributesDateFormat).toDate();
-                            scope.returnDate = moment(scope.predefinedReturnDate, directiveAttributesDateFormat).toDate();
+
+                            scope.preferences ={
+                                dates: {
+                                    departureDate: moment(scope.predefinedDepartureDate, directiveAttributesDateFormat).toDate(),
+                                    returnDate: moment(scope.predefinedReturnDate, directiveAttributesDateFormat).toDate(),
+                                    isFlexibleDepartureDate: false,
+                                    isFlexibleReturnDate: false,
+                                    flexibleDepartureDate: {
+                                        from: moment(scope.predefinedDepartureDate, directiveAttributesDateFormat).subtract(1, 'M').toDate(),
+                                        to: moment(scope.predefinedDepartureDate, directiveAttributesDateFormat).add(1, 'M').toDate(),
+                                    },
+                                    flexibleReturnDate: {
+                                        from: moment(scope.predefinedReturnDate, directiveAttributesDateFormat).subtract(1, 'M').toDate(),
+                                        to: moment(scope.predefinedReturnDate, directiveAttributesDateFormat).add(1, 'M').toDate(),
+                                    }
+                                },
+                                daysOfTravelPreference: {
+                                    outbound: undefined,
+                                    inbound: undefined
+                                },
+                                outboundTravelTimeRange: {
+                                    departure: undefined,
+                                    arrival: undefined
+                                },
+                                inboundTravelTimeRange: {
+                                    departure: undefined,
+                                    arrival: undefined
+                                }
+                            };
                         }
 
                         function runSubscriptionWorkflow() {
@@ -152,6 +166,12 @@ define([
                                 , scope: scope
                             });
                         }
+
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
+
+                        scope.$on('$destroy', function() {
+                            element.off('click');
+                        });
                     }
                 };
             }]);

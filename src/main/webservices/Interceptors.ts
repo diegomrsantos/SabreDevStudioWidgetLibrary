@@ -15,7 +15,7 @@ define([
         }
 
         return angular.module('sabreDevStudioWebServices')
-            .factory('NetworkConnectivityErrorInterceptor', ['$q', 'ErrorReportingService', 'apiURL', function ($q, ErrorReportingService, apiURL) {
+            .factory('NetworkConnectivityErrorInterceptor', ['$q', 'NetworkErrorReportingService', 'apiURL', function ($q, ErrorReportingService, apiURL) {
                 var COMMUNICATION_GENERIC_ERROR_MSG = _.template('Unable to communicate with <%= endpoint %>');
                 var COMMUNICATION_TIMEOUT_ERROR_MSG = _.template('Timeout calling <%= endpoint %>'); //
 
@@ -26,6 +26,9 @@ define([
                 var minimalCommunicationTimeMillisToDetectTimeout = 300;
                 return {
                     responseError: function (reason) {
+                        if (!isAPIrequest(reason.config.url, apiURL)) {
+                            return $q.reject(reason);
+                        }
                         if (reason.status !== 0) {
                             return $q.reject(reason);
                         }
@@ -71,11 +74,13 @@ define([
                 };
                 }])
             .constant('defaultTimeoutMillis', 5000)
-            .factory('AddTimeoutOnHttpCommunicationInterceptor', ['defaultTimeoutMillis', function (defaultTimeoutMillis) {
+            .factory('AddTimeoutOnHttpCommunicationInterceptor', ['defaultTimeoutMillis', 'apiURL', function (defaultTimeoutMillis, apiURL) {
                 return {
                     request: function(config) {
-                        config.timeout = config.timeout || defaultTimeoutMillis;
-                        config.timeoutClockStart = performance.now();
+                        if (isAPIrequest(config.url, apiURL)) {
+                            config.timeout = config.timeout || defaultTimeoutMillis;
+                            config.timeoutClockStart = performance.now();
+                        }
                         return config;
                     }
                 }

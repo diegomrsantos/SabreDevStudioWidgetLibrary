@@ -6,15 +6,33 @@ define([
     ) {
         'use strict';
 
+        const configs = {
+            US: {
+                apiURL: 'insert rest api url',
+                apiSpecificHeaders: {
+                    'application-key': 'insert value'
+                },
+                pointOfSaleCountry: 'US',
+                bfmRequestPcc: 'insert pcc'
+            },
+            DE: {
+                apiURL: 'insert rest api url',
+                apiSpecificHeaders: {},
+                pointOfSaleCountry: 'DE',
+                bfmRequestPcc: 'insert pcc'
+            }
+        };
+
+        const selectedConfig = configs.DE;
+
         var configurationModule = angular.module('configuration', [])
-            //.value('apiURL', 'http://localhost:8088/sabreapibridge/api')
-            .value('apiURL', 'http://10.14.54.160:8088/sabreapibridge/api')
-            //.value('apiURL', 'http://bridge.dev.sabre.cometari.com/api')
-            .value('pointOfSaleCountry', 'DE')
-            //.value('pointOfSaleCountry', 'US')
-            .value('fareNabberApiURL', 'http://pifhli101:51000/Subscriptions') // address of resource to create Fare Nabber subscriptions DAILY
-            //.value('fareNabberApiURL', 'http://ttfhli502:51000/Subscriptions') // address of resource to create Fare Nabber subscriptions INT
-            .value('fareNabberRegistrationPCC', 'E8KE');
+            .value('apiURL', selectedConfig.apiURL)
+            .value('apiSpecificHeaders', selectedConfig.apiSpecificHeaders)
+            .value('pointOfSaleCountry', selectedConfig.pointOfSaleCountry)
+            .value('bfmRequestPcc', selectedConfig.bfmRequestPcc)
+
+            .value('fareNabberApiURL', 'insert Fare Nabber Api URL')
+            .value('fareNabberRegistrationPCC', 'insert pcc')
 
         return configurationModule;
     });

@@ -4,10 +4,11 @@ define([
         , 'lodash'
         , 'angular_bootstrap'
         , 'widgets/SDSWidgets'
-        , 'datamodel/SearchCriteria'
+        , 'datamodel/search/SearchCriteriaFactory'
         , 'widgets/calendar/Calendar'
         , 'webservices/common/searchStrategyFactories/DaysRangeSearchStrategyFactory'
         , 'widgets/calendar/HighlightLengthOfStay'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -15,10 +16,11 @@ define([
         , _
         , angular_bootstrap
         , SDSWidgets
-        , SearchCriteria
+        , SearchCriteriaFactory
         , Calendar
         , DaysRangeSearchStrategyFactorySrc
         , HighlightLengthOfStay
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -54,7 +56,7 @@ define([
 
                     $scope.executeLifeSearchOnPredefinedCriteriaIfPresent = function (origin, destination, departureDateString, returnDateString) {
                         if (origin && destination && departureDateString && returnDateString) {
-                            var searchCriteria = SearchCriteria.prototype.buildRoundTripTravelSearchCriteria(origin, destination, departureDateString, returnDateString);
+                            var searchCriteria = SearchCriteriaFactory.buildRoundTripTravelSearchCriteria(origin, destination, departureDateString, returnDateString);
                             processSearchCriteria(searchCriteria);
                         }
                     };
@@ -109,9 +111,14 @@ define([
                         if (day.isBefore(new Date(), 'day')) { // no point to search for past dates
                             return;
                         }
-                        DateSelectedBroadcastingService.newSearchCriteria = lastSearchCriteria.cloneWithDatesAdjustedToOtherDepartureDate(day);
+                        var newSearchCriteria = lastSearchCriteria.cloneWithDatesAdjustedToOtherDepartureDate(day);
+                        DateSelectedBroadcastingService.newSearchCriteria = newSearchCriteria;
                         DateSelectedBroadcastingService.originalDataSourceWebService = searchService;
                         DateSelectedBroadcastingService.broadcast();
+                        $scope.cellClickedCallback({
+                            searchCriteria: newSearchCriteria,
+                            originalDataSourceWebService: searchService
+                        });
                     };
                 }
             ])
@@ -119,15 +126,17 @@ define([
                 return {
                     restrict: 'EA',
                     scope: {
-                          numberOfMonths: '@tabsShown'
-                        , activeSearchWebService: '@'
-                        , doNotShowPrevNextMonthDays: '@'
+                        numberOfMonths: '@tabsShown',
+                        activeSearchWebService: '@',
+                        doNotShowPrevNextMonthDays: '@',
+                        cellClickedCallback: '&?'
                     },
                     templateUrl: '../widgets/view-templates/widgets/CalendarWidgetTabs.tpl.html',
                     controller: 'CalendarWidgetCtrl',
                     link: function (scope, element, attrs) {
                         scope.numberOfMonths = parseInt(scope.numberOfMonths) || 1;
                         scope.executeLifeSearchOnPredefinedCriteriaIfPresent(attrs.origin, attrs.destination, attrs.departureDate, attrs.returnDate);
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
                     }
                 }
             }])
@@ -135,10 +144,11 @@ define([
                 return {
                     restrict: 'EA',
                     scope: {
-                          numberOfMonths: '@?totalNumberOfMonths'
-                        , numberOfMonthsShownAtOnce: '@?'
-                        , activeSearchWebService: '@'
-                        , doNotShowPrevNextMonthDays: '@'
+                        numberOfMonths: '@?totalNumberOfMonths',
+                        numberOfMonthsShownAtOnce: '@?',
+                        activeSearchWebService: '@',
+                        doNotShowPrevNextMonthDays: '@',
+                        cellClickedCallback: '&?'
                     },
                     templateUrl: '../widgets/view-templates/widgets/CalendarWidgetNavigable.tpl.html',
                     controller: 'CalendarWidgetCtrl',
@@ -146,6 +156,7 @@ define([
                         scope.numberOfMonthsShownAtOnce = parseInt(scope.numberOfMonthsShownAtOnce) || 1;
                         scope.numberOfMonths = parseInt(scope.numberOfMonths) || 10;
                         scope.executeLifeSearchOnPredefinedCriteriaIfPresent(attrs.origin, attrs.destination, attrs.departureDate, attrs.returnDate);
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
                     }
                 }
             }])

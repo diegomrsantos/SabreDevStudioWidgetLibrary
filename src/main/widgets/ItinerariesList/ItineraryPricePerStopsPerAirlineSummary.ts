@@ -5,7 +5,7 @@ define([
         , 'widgets/SDSWidgets'
     ],
     function (
-          _
+          __
         , angular
         , angular_bootstrap
         , SDSWidgets
@@ -16,14 +16,30 @@ define([
             .directive('itinerarySummaryPricePerStopsPerAirline', function () {
                 return {
                     scope: {
-                        summary: '='
+                        summary: '=',
+                        summaryItemClickedCallback: '&?'
                     },
                     templateUrl: '../widgets/view-templates/widgets/ItineraryPricePerStopsPerAirlineSummary.tpl.html',
-                    controller: ['$scope', function ($scope) {
+                    controller: [
+                            '$scope',
+                        function (
+                            $scope
+                        ) {
 
                         $scope.isAnyDataToDisplayAvailable = function () {
-                            return (_.isDefined($scope.summary));
+                            return (__.isDefined($scope.summary));
                         };
+
+                        $scope.itemClicked = function (itineraryId) {
+                            if (__.isDefined($scope.summaryItemClickedCallback)) {
+                                $scope.summaryItemClickedCallback({itineraryId: itineraryId});
+                            }
+                        };
+
+                        $scope.$on('$destroy', function() {
+                           delete $scope.isAnyDataToDisplayAvailable;
+                           delete $scope.itemClicked;
+                        });
                     }]
                 }
             });

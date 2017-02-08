@@ -1,0 +1,21 @@
+<filter-panel owner-id="{{ownerId}}">
+    <values-filter filter-panel-id="{{id}}" type="discrete" label="Number of stops" filterable-property-name="getNumberOfStops" values-display-filter="humanizeNumberOfStops" custom-currency-filter="isoCurrency"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="discreteListAllRequired" label="Layover airports" filterable-property-name="getConnectionAirports" values-display-filter="cityAndAirportFullNameNoAirportWord" custom-currency-filter="isoCurrency"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="discrete" label="Departure airports" filterable-property-name="getTripDepartureAirport" values-display-filter="cityAndAirportFullNameNoAirportWord" custom-currency-filter="isoCurrency"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="discrete" label="Arrival airports" filterable-property-name="getFirstLegArrivalAirport" values-display-filter="cityAndAirportFullNameNoAirportWord" custom-currency-filter="isoCurrency"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="boolean" label="Depart/Return same" filterable-property-name="isDepartureAndReturnSameAirport"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="discrete" label="Airline" filterable-property-name="getFirstMarketingAirline" values-display-filter="airlineFullName" custom-currency-filter="isoCurrency"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="rangeMonetaryAmount" label="Price" filterable-property-name="totalFareAmountWithCurrency" can-filter-only-on-max-value="true" custom-currency-filter="isoCurrency"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="rangeDateTime" label="Outbound flight departure" filterable-property-name="getOutboundDepartureDateTime" values-display-filter="makeMomentAndFormat" values-display-filter-options="hh:mm a"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="rangeDateTime" label="Inbound flight arrival" filterable-property-name="getInboundArrivalDateTime" values-display-filter="makeMomentAndFormat" values-display-filter-options="hh:mm a"></values-filter>
+
+    <values-filter filter-panel-id="{{id}}" type="range" label="Travel duration" filterable-property-name="outboundLegDuration" values-display-filter="makeMomentDurationAndFormat" values-display-filter-options="minute" can-filter-only-on-max-value="true"></values-filter>
+</filter-panel>

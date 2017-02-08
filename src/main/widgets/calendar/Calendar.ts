@@ -3,7 +3,7 @@ define([
     , 'moment'
     , 'moment_range'
     , 'widgets/calendar/CalendarMonthBounds'
-    , 'util/PriceClassifier'
+    , 'util/OrderInSequencePriceClassifier'
     , 'util/momentRangeUtils'
     , 'datamodel/ShoppingData'
     ],
@@ -12,7 +12,7 @@ define([
     , moment
     , moment_range
     , CalendarMonthBounds
-    , PriceClassifier
+    , OrderInSequencePriceClassifier
     , momentRangeUtils
     , ShoppingData
 ) {
@@ -42,7 +42,7 @@ define([
               return modelMonths;
             };
 
-            this.priceClassifier = new PriceClassifier();
+            this.priceClassifier = new OrderInSequencePriceClassifier();
 
             this.prepareDataModel = function (searchCriteria) {
                 var requestedMonth = searchCriteria.getFirstLeg().departureDateTime || searchCriteria.earliestDepartureLatestReturnDatesFlexibility.earliestDepartureDateTime;

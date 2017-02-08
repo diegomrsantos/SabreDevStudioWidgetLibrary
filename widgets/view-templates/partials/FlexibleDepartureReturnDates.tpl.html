@@ -1,0 +1,204 @@
+<ng-form name="internalFormName">
+    <div class="form-group">
+        <div class="col-lg-9 col-lg-offset-3">
+            <div class="checkbox">
+                <label for="internalFormName_IsFlexibleDepartureDate">
+                    <input type="checkbox" name="isFlexibleDepartureDate" id="internalFormName_IsFlexibleDepartureDate"
+                           ng-model="ngModel.dates.isFlexibleDepartureDate">
+                    Flexible departure date
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group" ng-if="!ngModel.dates.isFlexibleDepartureDate"
+         ng-class="{'has-error': internalFormName.departureDate.$invalid || internalFormName.$error.invalidDepartureDate}">
+        <label for="internalFormName_DepartureDate" class="input-sm col-sm-3 control-label">Leaving on</label>
+        <div class="col-sm-3">
+            <input-date class="input-group" id="internalFormName_DepartureDate" name="departureDate"
+                        class="form-control input-sm" required="true" ng-model="ngModel.dates.departureDate" min-date="minDate">
+            </input-date>
+            <div class="help-block" ng-show="fareNabberForm.departureDate.$invalid">
+                <small ng-show="internalFormName.departureDate.$error.required">Choose departure date</small>
+            </div>
+            <div class="help-block" ng-show="internalFormName.$error.invalidDepartureDate">
+                <small ng-show="internalFormName.$error.invalidDepartureDate">
+                    Leaving on must be before or equal to {{ngModel.dates.isFlexibleReturnDate ? "Returning from" : "Returning on"}}</small>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="ngModel.dates.isFlexibleDepartureDate">
+        <div class="form-group">
+            <div ng-class="{'has-error':internalFormName.departureDateFrom.$invalid
+                || internalFormName.$error.invalidDepartureDateFrom
+                || internalFormName.$error.invalidDepartureDateFromTo}">
+                <label for="internalFormName_DepartureDateFrom" class="input-sm col-sm-3 control-label">Leaving from</label>
+                <div class="col-sm-3">
+                    <input-date class="input-group" id="internalFormName_DepartureDateFrom" name="departureDateFrom"
+                                class="form-control input-sm" required="true" ng-model="ngModel.dates.flexibleDepartureDate.from"
+                                min-date="minDate"></input-date>
+                    <div class="help-block" ng-show="internalFormName.departureDateFrom.$invalid">
+                        <small ng-show="internalFormName.departureDateFrom.$error.required">Choose Leaving from</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidDepartureDateFrom">
+                        <small>Leaving from must be before or equal to
+                            {{ngModel.dates.isFlexibleReturnDate ? "Returning from" : "Returning on"}}</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidDepartureDateFromTo">
+                        <small>Leaving from must be before Leaving to</small>
+                    </div>
+                </div>
+            </div>
+            <div ng-class="{'has-error':internalFormName.departureDateTo.$invalid
+                || internalFormName.$error.invalidDepartureDateToFrom
+                || internalFormName.$error.invalidDepartureDateToReturnDateTo}">
+                <label for="internalFormName_DepartureDateTo" class="input-sm col-sm-2 control-label">Leaving to</label>
+                <div class="col-sm-3">
+                    <input-date class="input-group" id="internalFormName_DepartureDateTo" name="departureDateTo"
+                                class="form-control input-sm" required="true" ng-model="ngModel.dates.flexibleDepartureDate.to"
+                                min-date="minDate"></input-date>
+                    <div class="help-block" ng-show="internalFormName.departureDateTo.$invalid">
+                        <small ng-show="internalFormName.departureDateTo.$error.required">Choose Leaving to</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidDepartureDateToFrom">
+                        <small>Leaving to must be after Leaving from</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidDepartureDateToReturnDateTo">
+                        <small>Leaving To must be before or equal to Returning To</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="internalFormName_DepartureDaysOfWeek" class="input-sm control-label col-sm-3">Departure days of week</label>
+            <select-days-of-week class="col-sm-9" id="internalFormName_DepartureDaysOfWeek" days-of-week="ngModel.daysOfTravelPreference.outbound"></select-days-of-week>
+        </div>
+    </div>
+
+    <div class="col-lg-9 col-lg-offset-3">
+        <div>
+            <a href="" ng-click="showOutboundFlightsTimeOfDaySelection = !showOutboundFlightsTimeOfDaySelection">Set specific hours for departure flights</a>
+        </div>
+        <div class="well well-lg form-group col-sm-6" collapse="!showOutboundFlightsTimeOfDaySelection">
+            <label class="input-sm control-label">
+                Flight departure time of day
+            </label>
+            <div>
+                <input-time-of-day-range class="form-control input-sm" range="ngModel.outboundTravelTimeRange.departure"></input-time-of-day-range>
+            </div>
+            <label class="input-sm control-label">
+                Flight arrival time of day
+            </label>
+            <div>
+                <input-time-of-day-range class="form-control input-sm" range="ngModel.outboundTravelTimeRange.arrival"></input-time-of-day-range>
+            </div>
+        </div>
+        <div class="row SDSBottomBuffer-xs"></div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-9 col-lg-offset-3">
+            <div class="checkbox">
+                <label for="internalFormName_FlexibleReturnDate">
+                    <input type="checkbox" name="isflexibleReturnDate" id="internalFormName_FlexibleReturnDate"
+                           ng-model="ngModel.dates.isFlexibleReturnDate">
+                    Flexible return date
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="!ngModel.dates.isFlexibleReturnDate"
+         ng-class="{'has-error':internalFormName.returnDate.$invalid || internalFormName.$error.invalidReturnDate}">
+        <div class="form-group">
+            <label for="internalFormName_ReturnDate" class="input-sm col-sm-3 control-label">Returning on</label>
+            <div class="col-sm-3">
+                <input-date class="input-group" id="internalFormName_ReturnDate" name="returnDate" class="form-control input-sm"
+                            required="(ngModel.dates.returnDate)? true: false" ng-model="ngModel.dates.returnDate"
+                            min-date="minDate"></input-date>
+                <div class="help-block" ng-show="internalFormName.returnDate.$invalid">
+                    <small ng-show="internalFormName.returnDate.$error.required">Choose return date</small>
+                </div>
+                <div class="help-block" ng-show="internalFormName.$error.invalidReturnDate">
+                    <small ng-show="internalFormName.$error.invalidReturnDate">
+                        Returning on must be after or equal to {{ngModel.dates.isFlexibleReturnDate ? "Leaving from" : "Leaving on"}}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="ngModel.dates.isFlexibleReturnDate">
+        <div class="form-group">
+            <div ng-class="{'has-error':internalFormName.returnDateFrom.$invalid
+                || internalFormName.$error.invalidReturnDateFrom
+                || internalFormName.$error.invalidReturnDatesFromTo}">
+                <label for="internalFormName_ReturnDateFrom" class="input-sm col-sm-3 control-label">Returning From</label>
+                <div class="col-sm-3">
+                    <input-date class="input-group" id="internalFormName_ReturnDateFrom" name="returnDateFrom"
+                                class="form-control input-sm" required="true" ng-model="ngModel.dates.flexibleReturnDate.from"
+                                min-date="minDate"></input-date>
+                    <div class="help-block" ng-show="internalFormName.returnDateFrom.$invalid">
+                        <small ng-show="internalFormName.returnDateFrom.$error.required">Choose return date from</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidReturnDateFrom">
+                        <small>Return from must be after or equal to
+                            {{ngModel.dates.isFlexibleDepartureDate ? "Leaving from" : "Leaving on"}}</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidReturnDatesFromTo">
+                        <small>Returning from must be before Returning to</small>
+                    </div>
+                </div>
+            </div>
+            <div ng-class="{'has-error':internalFormName.returnDateTo.$invalid
+                    || internalFormName.$error.invalidReturnDatesToFrom
+                    || internalFormName.$error.invalidReturnDateToDepartureDateTo}">
+                <label for="internalFormName_ReturnDateTo" class="input-sm col-sm-2 control-label">Returning To</label>
+                <div class="col-sm-3">
+                    <input-date class="input-group" id="internalFormName_ReturnDateTo" name="returnDateTo"
+                                class="form-control input-sm" required="true" ng-model="ngModel.dates.flexibleReturnDate.to"
+                                min-date="minDate"></input-date>
+                    <div class="help-block" ng-show="internalFormName.returnDateTo.$invalid">
+                        <small ng-show="internalFormName.returnDateTo.$error.required">Choose return date to</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidReturnDatesToFrom">
+                        <small>Returning to must be after Returning from</small>
+                    </div>
+                    <div class="help-block" ng-if="internalFormName.$error.invalidReturnDateToDepartureDateTo">
+                        <small>Returning To must be after or equal to Leaving To</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <!-- </div>-->
+            <!--<div class="form-group">-->
+            <label for="internalFormName_ReturnDaysOfWeek" class="input-sm control-label col-sm-3">Return days of week</label>
+            <select-days-of-week class="col-sm-9"id="internalFormName_ReturnDaysOfWeek"
+                                 days-of-week="ngModel.daysOfTravelPreference.inbound"></select-days-of-week>
+            <!--   </div>-->
+        </div>
+    </div>
+
+    <div class="col-lg-9 col-lg-offset-3">
+        <div>
+            <a href="" ng-click="showInboundFlightsTimeOfDaySelection = !showInboundFlightsTimeOfDaySelection">Set specific hours for return flights</a>
+        </div>
+        <div class="well well-lg form-group col-sm-6" collapse="!showInboundFlightsTimeOfDaySelection">
+            <label class="input-sm control-label">
+                Flight departure time of day
+            </label>
+            <div>
+                <input-time-of-day-range class="form-control input-sm" range="ngModel.inboundTravelTimeRange.departure"></input-time-of-day-range>
+            </div>
+            <label class="input-sm control-label">
+                Flight arrival time of day
+            </label>
+            <div>
+                <input-time-of-day-range class="form-control input-sm" range="ngModel.inboundTravelTimeRange.arrival"></input-time-of-day-range>
+            </div>
+        </div>
+        <div class="row SDSBottomBuffer-xs"></div>
+    </div>
+</ng-form>

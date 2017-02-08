@@ -1,0 +1,14 @@
+<nav class="navbar navbar-default">
+    <!-- This .navbar is on purpose NOT in .container or container-fluid. We do not want bootstrap responsive (whole screen) media queries to mess here.
+    Making navbar menu fully responsive in element query context would require developing own SDS classes for container, navbar, etc. Not supported. -->
+    <div class="navbar-header">
+        <ul class="nav navbar-nav">
+            <li ng-repeat="theme in travelThemes" class="SDSCursorPointer" ng-class="{'active': theme === selectedTravelTheme}" ng-click="travelThemeClicked($event, theme)">
+                <!-- WARN: We have to have <a> tag below to have Bootstrap styling for navbar elements.
+                    On the other hand the <a> tag below cannot have any href not to mess with URL location.
+                    Enclosing <li> element gets cursor pointer override, as without it, our <a> tag without href has text-like (not link) cursor (from browser default styling)-->
+                <a>{{theme | capitalize}}</a>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -11,6 +11,23 @@ define([
     lodash.mixin({
         isDefined: _.negate(_.isUndefined),
         /**
+         * Returns function decorated with cancel() api.
+         * Once cancel() is called the base function will not execute.
+         * Usable for example in callbacks when we want to prevent/disable execution of function that we passed to callback
+         */
+        cancellable: function (fn) {
+            var decoratedFn: any = function () {
+                if (decoratedFn.cancelled) {
+                    return;
+                }
+                return fn.apply(this, arguments);
+            };
+            decoratedFn.cancel = function() {
+                decoratedFn.cancelled = true;
+            };
+            return decoratedFn;
+        },
+        /**
          * Selects minimum from all values of object enumerable properties.
          * Returns undefined if there are no enumerable properties
          * @param object
@@ -155,6 +172,11 @@ define([
             return _.flatten(nextLevelMappings.map(function (item) {
                 return leafValues(item, maxTraverseDepth);
             }));
+        },
+
+        dateDiffDays: function (date1, date2) {
+            var timeDiff = Math.abs(date2.getTime() - date1.getTime());
+            return Math.ceil(timeDiff / (1000 * 3600 * 24));
         }
     });
 

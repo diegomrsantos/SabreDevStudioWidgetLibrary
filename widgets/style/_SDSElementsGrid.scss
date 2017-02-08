@@ -12,13 +12,6 @@ $numberOfGridColumns: 12 !default;
   @include createGridColumnsForBreakpoint('100em', '4xl', 20px);
 }
 
-@mixin createFormInlineForAllBreakpoints {
-  @include createFormInlineForBreakpoint('40em', 'sm');
-  @include createFormInlineForBreakpoint('50em', 'md');
-  @include createFormInlineForBreakpoint('60em', 'lg');
-  @include createFormInlineForBreakpoint('70em', 'xl');
-}
-
 @mixin createGridColumnsForBreakpoint($breakpoint, $sizeShortcut, $gutterWidth) {
   @include setColumnsGutter($sizeShortcut, $gutterWidth);
   @include setColumnsFloat($breakpoint, $sizeShortcut);
@@ -33,6 +26,11 @@ $numberOfGridColumns: 12 !default;
       padding-left: #{$gutterWidth / 2};
       padding-right: #{$gutterWidth / 2};
       position: relative;
+    }
+
+    .SDS-col-element-#{$sizeShortcut}-#{$i}.SDS-clear-gutter {
+      padding-left: 0;
+      padding-right: 0;
     }
   }
 }
@@ -75,9 +73,6 @@ $numberOfGridColumns: 12 !default;
 
 @mixin createGridRow {
     .SDS-row {
-      margin-right: -5px;
-      margin-left: -5px;
-
       &:before, &:after {
         display: table;
         content: " ";
@@ -88,67 +83,7 @@ $numberOfGridColumns: 12 !default;
     }
 }
 
-/* mimicking bootstrap form-inline */
-@mixin createFormInlineForBreakpoint($breakpoint, $sizeShortcut) {
-  &[min-width~="#{$breakpoint}"] {
-    .SDS-form-#{$sizeShortcut}-inline .form-group:not(.SDS-form-inline-exclude) {
-      display: inline-block;
-      margin-bottom: 0;
-      vertical-align: middle;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .form-control:not(.SDS-form-inline-exclude) {
-      display: inline-block;
-      width: auto;
-      vertical-align: middle;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .form-control-static:not(.SDS-form-inline-exclude) {
-      display: inline-block;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .input-group:not(.SDS-form-inline-exclude) {
-      display: inline-table;
-      vertical-align: middle;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .input-group .input-group-addon,
-    .SDS-form-#{$sizeShortcut}-inline .input-group .input-group-btn,
-    .SDS-form-#{$sizeShortcut}-inline .input-group .form-control {
-      width: auto;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .input-group > .form-control {
-      width: 100%;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .control-label {
-      margin-bottom: 0;
-      vertical-align: middle;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .radio,
-    .SDS-form-#{$sizeShortcut}-inline .checkbox {
-      display: inline-block;
-      margin-top: 0;
-      margin-bottom: 0;
-      vertical-align: middle;
-    }
-
-    .SDS-form-#{$sizeShortcut}-inline .radio label:not(.btn), // do not to decrease padding left when labels are styled as buttons, inside button groups
-    .SDS-form-#{$sizeShortcut}-inline .checkbox label:not(.btn) {
-      padding-left: 0;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .radio input[type="radio"],
-    .SDS-form-#{$sizeShortcut}-inline .checkbox input[type="checkbox"] {
-      position: relative;
-      margin-left: 0;
-    }
-    .SDS-form-#{$sizeShortcut}-inline .has-feedback .control-feedback {
-      top: 0;
-    }
-    // below add-ons to bootstrap form-inline
-    .SDS-form-#{$sizeShortcut}-inline .btn.SDS-form-inline-button {
-      margin-left: 10px;
-    }
-  }
-}
-
 .SDSResponsiveElement {
   @include createGridColumnsForAllBreakpoints;
   @include createGridRow;
-  @include createFormInlineForAllBreakpoints;
 }

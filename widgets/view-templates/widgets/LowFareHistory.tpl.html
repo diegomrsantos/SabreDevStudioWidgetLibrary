@@ -1,13 +1,19 @@
-<div class="panel panel-default" ng-show="ctrl.isAnyDataToDisplayAvailable()">
+<div class="panel panel-default SDS-panel" ng-show="ctrl.isAnyDataToDisplayAvailable()">
 
-    <div class="panel-heading text-center">
+    <div class="panel-heading text-center" ng-hide="hideHeader">
         <h4 class="panel-title">Low Fare History</h4>
     </div>
 
     <div class="panel-body">
-        <h5>
-            Low fares history from <em>{{ctrl.lastSearchCriteriaAirports.departureAirport | cityAndAirportFullName}}</em> to <em>{{ctrl.lastSearchCriteriaAirports.arrivalAirport | cityAndAirportFullName}}</em>
-        </h5>
+        <div class="text-center">
+            <small>
+                Lowest fares from
+                <em>{{ctrl.lastSearchCriteriaAirports.departureAirport | cityFullName}}</em>
+                to
+                <em>{{ctrl.lastSearchCriteriaAirports.arrivalAirport | cityFullName}}</em>
+                in last {{historyDaysCount}} days
+            </small>
+        </div>
 
         <div>
             <canvas></canvas>

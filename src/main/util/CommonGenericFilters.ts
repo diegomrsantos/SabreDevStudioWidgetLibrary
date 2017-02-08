@@ -32,6 +32,11 @@ define([
                     return prefix + (input || []).join(delimiter) + suffix;
                 };
             })
+            .filter('capitalize', function () { //Converts the first character of string to upper case and the remaining to lower case.
+                return function (themeStringFromApi) {
+                    return _.startCase(themeStringFromApi.toLowerCase());
+                }
+            })
             .filter('unixTimeToMoment', function () {
                 return function (input) {
                     return moment.unix(input);
@@ -43,22 +48,6 @@ define([
                         return '';
                     }
                     return value.format(momentFormat);
-                };
-            })
-            .filter('makeMomentAndFormat', function () {
-                return function (value, momentFormat) {
-                    if (_.isUndefined(value) || value === null) {
-                        return '';
-                    }
-                    return moment(value).format(momentFormat);
-                };
-            })
-            .filter('makeMomentDurationAndFormat', function () {
-                return function (value, momentFormat, suffix) {
-                    if (_.isUndefined(value) || value === null) {
-                        return '';
-                    }
-                    return moment.duration(value, momentFormat).humanize(suffix);
                 };
             })
             .filter('passAllFilter', function () {

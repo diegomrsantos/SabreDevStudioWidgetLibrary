@@ -1,11 +1,11 @@
 <div class="SDSWidget SDSResponsiveElement">
-    <div class="panel panel-default" ng-if="isAnyDataToDisplayAvailable()">
+    <div class="panel panel-default SDS-panel" ng-if="isAnyDataToDisplayAvailable()">
 
-        <div class="panel-heading text-center">
+        <div class="panel-heading SDS-panel-heading text-center">
             <h4 class="panel-title">Lead Prices Calendar</h4>
         </div>
 
-        <div class="panel-body">
+        <div class="panel-body SDS-panel-body">
             <div class="SDS-row">
                 <div ng-class="{'SDS-col-element-xxl-6':numberOfMonthsShownAtOnce == 2, 'SDS-col-element-xxl-4':numberOfMonthsShownAtOnce == 3}"
                      ng-repeat="month in calendar.months | startFrom: (paginationSettings.currentPage - 1) * numberOfMonthsShownAtOnce | limitTo: numberOfMonthsShownAtOnce"
@@ -18,7 +18,7 @@
             </div>
         </div>
 
-        <div class="panel-footer" ng-if="numberOfMonths > 1">
+        <div class="panel-footer SDS-panel-footer" ng-if="numberOfMonths > 1">
             <pager total-items="calendar.months.length" ng-model="paginationSettings.currentPage" items-per-page="numberOfMonthsShownAtOnce"></pager>
         </div>
 

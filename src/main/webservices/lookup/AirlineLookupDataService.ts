@@ -25,30 +25,6 @@ define([
                     , businessMessagesErrorHandler
                 ) {
 
-                    function correctAirlineName(airlineName) {
-                        // removing company legal organization form abbreviations, plus patching several most common and too long airlines names
-                        return airlineName.replace(/S\.?A\.?/g, '')
-                            .replace(/gmbh/gi, '')
-                            .replace(/Ltd\.?/gi, '')
-                            .replace(/L\.?L\.?C\.?/gi, '')
-                            .replace(/Limited/gi, '')
-                            .replace(/Inc\.?/gi, '')
-                            .replace(/AG/gi, '')
-                            .replace(/Pty/gi, '')
-                            .replace(/Co\./gi, '')
-                            .replace(/C\.?A\.?/g, '')//WARN Air Canada, American Airlines
-                            .replace(/.*Lan.*Ecuador.*/g, 'Lan Ecuador')
-                            .replace(/.*Lan.*Equador.*/g, 'Lan Equador')
-                            .replace(/.*SWISS.*/g, 'SWISS')
-                            .replace(/.*Iberia.*/g, 'Iberia')
-                            .replace(/.*Air.*Berlin.*/g, 'Air Berlin')
-                            .replace(/.*Malaysian.*Airline.*/g, 'Malaysian Airline')
-                            .replace(/.*Ukraine.*International.*/g, 'Ukraine International Airlines')
-                            .replace(/.*Virgin.*Australia.*/g, 'Virgin Australia')
-                            .replace(/.*Alitalia.*/g, 'Alitalia')
-                            .replace(/.*Austrian.*/g, 'Austrian Airlines');
-                    }
-
                     return {
                         getAirlineAndAirlineCodesList: function () {
                             return $q(function (resolve, reject) {
@@ -61,7 +37,7 @@ define([
                                                 .map(function (item) {
                                                     return {
                                                         AirlineCode: item.AirlineCode
-                                                        , AirlineName: correctAirlineName(item.AirlineName)
+                                                        , AirlineName: item.AlternativeBusinessName
                                                     };
                                                 });
                                         $localStorage.airlineAndAirlineCodesList = airlineAndAirlineCodesList;
@@ -78,7 +54,7 @@ define([
                             function parseAirlineLookupResponse(response) {
                                 var dictionary = {};
                                 response.AirlineInfo.forEach(function (item) {
-                                    dictionary[item.AirlineCode] = correctAirlineName(item.AirlineName);
+                                    dictionary[item.AirlineCode] = item.AlternativeBusinessName;
                                 });
                                 return dictionary;
                             }

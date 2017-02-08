@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flight List</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" href="../bower_components/angular-ui-select/dist/select.css">
+    <link rel="stylesheet" type="text/css" href="../widgets/stylesheets/SDSMain.css">
+    <link rel="stylesheet" type="text/css" href="css/app.css">
+    <partial command="include('partials/navigation-includes.html')"></partial>
+</head>
+<body>
+    <div id="mainPageContainer">
+        <partial command="include('partials/navigation.html')"></partial>
+        <search-form class="embeddedWidget" show-optional-fields="BagsRequested" hide-fields="DirectFlightsOnly,IsPlusMinus3DaysFlexible,PreferredAirline,PreferredCabin"></search-form>
+        <itinerary-list class="embeddedWidget" id="ItineraryList2" active-search="true" active-search-web-service="bfm"></itinerary-list>
+        <error-display class="embeddedWidget"></error-display>
+        <network-error-display></network-error-display>
+		<validation-error-display></validation-error-display>
+    </div>
+
+    <script async data-main="../build-js/main/SabreDevStudioSDK" src="../node_modules/requirejs/require.js"></script>
+</body>
+</html>

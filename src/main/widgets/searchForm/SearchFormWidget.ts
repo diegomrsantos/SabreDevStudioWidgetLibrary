@@ -1,20 +1,24 @@
 define([
          'lodash'
+        , 'util/LodashExtensions'
         , 'moment'
         , 'angular'
         , 'angular_bootstrap'
         , 'widgets/SDSWidgets'
         , 'widgets/searchForm/TravelDatesFlexibilitySelectionMode'
-        , 'datamodel/SearchCriteria'
-        , 'datamodel/SearchCriteriaLeg'
-        , 'datamodel/DaysOfWeekAtDestination'
-        , 'datamodel/PlusMinusDaysTravelDatesFlexibility'
-        , 'datamodel/EarliestDepartureLatestReturnTravelDatesFlexibility'
+        , 'datamodel/search/SearchCriteria'
+        , 'datamodel/search/SearchCriteriaLeg'
+        , 'datamodel/search/alternateDates/DaysOfWeekAtDestination'
+        , 'datamodel/search/alternateDates/PlusMinusDaysTravelDatesFlexibility'
+        , 'datamodel/search/alternateDates/EarliestDepartureLatestReturnTravelDatesFlexibility'
+        , 'datamodel/search/DiversityModelOptions'
         , 'util/DOMManipulationUtils'
         , 'util/BaseServices'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           _
+        , __
         , moment
         , angular
         , angular_bootstrap
@@ -25,8 +29,10 @@ define([
         , DaysOfWeekAtDestination
         , PlusMinusDaysTravelDatesFlexibility
         , EarliestDepartureLatestReturnTravelDatesFlexibility
+        , DiversityModelOptions
         , domUtils
         , BaseServicesSrc
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -44,7 +50,9 @@ define([
 
                 $scope.widgetId = widgetIdGenerator.next();
 
-                $scope.detailsVisibility = {};
+                $scope.diversityModelOptions = new DiversityModelOptions();
+
+                $scope.detailsVisibility = {useDiversityModelOptions: false};
 
                 $scope.tripType = 'returnTrip';
 
@@ -64,7 +72,6 @@ define([
                 $scope.lengthsOfStay = {
                     selected: {}
                 };
-
 
                 function createLegs(tripType) {
                     switch (tripType) {
@@ -114,7 +121,7 @@ define([
                     $scope.multiDestinationLegs.pop();
                 };
 
-                /* jshint maxcomplexity:9 */
+                /* jshint maxcomplexity:15 */
                 $scope.createNewSearchCriteria = function () {
                     var searchCriteria = new SearchCriteria();
 
@@ -154,6 +161,10 @@ define([
 
                     searchCriteria.addPassenger("ADT", $scope.generalSearchCriteria.ADTPaxCount);
 
+                    if (__.isDefined($scope.generalSearchCriteria.bagsRequested)) {
+                        searchCriteria.bagsRequested = $scope.generalSearchCriteria.bagsRequested;
+                    }
+
                     if ($scope.generalSearchCriteria.DirectFlightsOnly) {
                         searchCriteria.maxStops = 0;
                     }
@@ -170,8 +181,16 @@ define([
                         searchCriteria.optionsPerDay = $scope.optionsPerDay;
                     }
 
+                    if($scope.detailsVisibility.useDiversityModelOptions){
+                        searchCriteria.diversityModelOptions = $scope.diversityModelOptions;
+                    }
+
                     SearchCriteriaBroadcastingService.searchCriteria = searchCriteria;
                     SearchCriteriaBroadcastingService.broadcast();
+
+                    if (__.isDefined($scope.newSearchCriteriaCallback)) {
+                        $scope.newSearchCriteriaCallback({searchCriteria: searchCriteria});
+                    }
                 };
 
                 $scope.plusMinusConstantDateFlexibilityCheckboxClicked = function () {
@@ -183,6 +202,9 @@ define([
                 };
 
                 $scope.isVisible = function (htmlFieldName) {
+                    if (_.contains($scope.optionalFields, htmlFieldName)) {
+                        return _.contains($scope.optionalFieldsToShow, htmlFieldName);
+                    }
                     return !_.contains($scope.fieldsToHide, htmlFieldName);
                 }
 
@@ -198,13 +220,19 @@ define([
                    scope: {
                        selectableAirportsForThisPosOnly: '@'
                        , selectableAirportsDictionary: '@'
+                       , newSearchCriteriaCallback: '&?'
+                       , showDiversityOptions: '@?'
                    },
                    link: function (scope, element) {
 
                        var DEFAULT_LENGTH_OF_STAY = 14;
                        var DEFAULT_ADVANCE_PURCHASE_DAYS = 14;
 
+                       scope.optionalFields = ['BagsRequested']
+
                        parseFieldsToHide();
+
+                       parseOptionalFieldsToShow();
 
                        parseSearchOptionsDefaults();
 
@@ -216,8 +244,14 @@ define([
 
                        scheduleDeferredElementsLoad();
 
+                       WidgetGlobalCallbacks.linkComplete(scope, element);
+
                        function parseFieldsToHide() {
                            scope.fieldsToHide = element.attr('hide-fields') && element.attr('hide-fields').split(',') || [];
+                       }
+
+                       function parseOptionalFieldsToShow() {
+                           scope.optionalFieldsToShow = element.attr('show-optional-fields') && element.attr('show-optional-fields').split(',') || [];
                        }
 
                        function parseSearchOptionsDefaults() {

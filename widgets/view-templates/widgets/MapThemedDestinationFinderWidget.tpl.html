@@ -1,0 +1,40 @@
+<div class="SDSWidget SDSMapThemedDestinationFinderWidget" ng-if="isAnyDataToDisplayAvailable()">
+    <!-- DO NOT use ng-show="isAnyDataToDisplayAvailable()", use ng-if: it is because you do not want map DOM do be created before model data are available.
+    If you use ngShow (DOM is created), them later when you populated the model you would have to call refresh on map.
+     See https://github.com/angular-ui/angular-google-maps/issues/76
+     http://stackoverflow.com/questions/4700594/google-maps-displaynone-problem/8595674#8595674
+     -->
+    <div class="SDSMapTopLegend">
+        <span class="SDSMapTopLegendElement" ng-repeat="(tier, tierPriceFrom) in model.priceTiersStatistics.tiersPricesFrom">
+            <img ng-src="{{getTierIcon(tier)}}">
+            from {{tierPriceFrom | isoCurrency:model.priceTiersStatistics.tiersPriceCurrency:0}}
+        </span>
+    </div>
+
+    <ui-gmap-google-map center='closestAirportGeoCoordinates'
+                        zoom='initialZoom'
+                        refresh="true">
+
+        <ui-gmap-marker ng-repeat="offersForOneDestination in model.pricesForDestinationsGrouped track by offersForOneDestination.destination"
+                        coords="offersForOneDestination.geoCoordinates"
+                        idkey="offersForOneDestination.destination"
+                        click="offersForOneDestination.offerShown = !offersForOneDestination.offerShown"
+                        options="getMarkerOptions(offersForOneDestination.priceTier)"
+                        events="markerEvents"
+                        control="offersForOneDestination">
+            <ui-gmap-window show="offersForOneDestination.shortDetailsShown && !offersForOneDestination.offerShown"
+                            templateUrl="'../widgets/view-templates/partials/DestinationFinderOfferShortDetailsInfoView.tpl.html'"
+                            templateParameter="offersForOneDestination"
+                            closeClick="offersForOneDestination.shortDetailsShown = !offersForOneDestination.shortDetailsShown"
+                            ng-cloak>
+            </ui-gmap-window>
+            <ui-gmap-window show="offersForOneDestination.offerShown"
+                            templateUrl="'../widgets/view-templates/partials/DestinationFinderOfferDetailsInfoView.tpl.html'"
+                            templateParameter="offersForOneDestination"
+                            closeClick="offersForOneDestination.offerShown = !offersForOneDestination.offerShown"
+                            ng-cloak>
+            </ui-gmap-window>
+        </ui-gmap-marker>
+
+    </ui-gmap-google-map>
+</div>

@@ -1,0 +1,3 @@
+interface ITripOriginProvider {
+    get(): string;
+}

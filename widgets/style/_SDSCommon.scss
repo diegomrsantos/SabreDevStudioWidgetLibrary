@@ -1,12 +1,5 @@
-@import "compass/css3";
-@import "compass/css3/images";
-
-$bootstrapPrimaryColor: #337ab7;
-
-$itemsSeparatingLineColor: #D2DDE4;
-$itemsSeparatingLineStyle: solid #D2DDE4 1px;
-
 .SDSTopLevelList > li  {
+  padding: 0.1em;
   border-bottom: solid #D2DDE4 1px;
   &:nth-child(odd) {
     background-color: #F2F2F2;
@@ -56,25 +49,6 @@ $itemsSeparatingLineStyle: solid #D2DDE4 1px;
   }
 }
 
-/* general class to add to all for all inactive/deactivated elements */
-.SDSInactive {
-  @include opacity(0.35);
-  pointer-events: none;
-}
-
-/* helper class, for use in javascript, to hide elements */
-.SDSHidden {
-  visibility: hidden;
-}
-
-.SDSInitiallyNotDisplayed {
-  display: none;
-}
-
-.SDSNoWrap {
-  white-space:nowrap;
-}
-
 .SDSWidget {
 
   .SDSPaxNbrInput { //bumping up selector value to override bootstrap
@@ -93,30 +67,6 @@ $itemsSeparatingLineStyle: solid #D2DDE4 1px;
 
 }
 
-.SDSDisableLink {
-  pointer-events: none;
-}
-
-.SDSTopBuffer-xs {
-  margin-top: 1rem;
-}
-.SDSTopBuffer-sm {
-  margin-top: 2rem;
-}
-.SDSTopBuffer-md {
-  margin-top: 3rem;
-}
-
-.SDSBottomBuffer-xs {
-  margin-bottom: 1rem;
-}
-.SDSBottomBuffer-sm {
-  margin-bottom: 2rem;
-}
-.SDSBottomBuffer-md {
-  margin-bottom: 3rem;
-}
-
 .SDSPreferredAirlineSelect {
 
   .ui-select-toggle {
@@ -129,19 +79,4 @@ $itemsSeparatingLineStyle: solid #D2DDE4 1px;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-}
-
-.SDSHideOverflow {
-  text-overflow: clip;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.SDSSearchInProgressUponClicked {
-  cursor: wait;
-}
-
-.SDSPaddingSmall {
-  padding-right: 0.2rem;
-  padding-left: 0.2rem;
 }

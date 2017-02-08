@@ -6,7 +6,7 @@
 
     <div class="panel-body" ng-show="ctrl.isAnyDataToDisplayAvailable()">
         <h5>Prices from <em>{{ctrl.lastSearchCriteriaAirports.departureAirport | cityAndAirportFullName}}</em> to <em>{{ctrl.lastSearchCriteriaAirports.arrivalAirport | cityAndAirportFullName}}</em>,
-            from <strong>{{ctrl.minDateAndPricePair.totalFareAmount | currency:ctrl.minDateAndPricePair.currency}}</strong> at <strong>{{ctrl.minDateAndPricePair.date.format('D MMM')}}</strong>
+            from <strong>{{ctrl.minDateAndPricePair.totalFareAmount | isoCurrency:ctrl.minDateAndPricePair.currency}}</strong> at <strong>{{ctrl.minDateAndPricePair.date.format('D MMM')}}</strong>
         </h5>
 
         <div>

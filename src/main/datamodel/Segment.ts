@@ -41,5 +41,18 @@ define([],
             return this.arrivalDateTime.isAfter(firstMidnight); // WARN timezone changes!! flight times in local time
         };
 
+        Segment.prototype.equals = function (other) {
+            return this.departureAirport === other.departureAirport
+                && this.departureDateTime.isSame(other.departureDateTime)
+                && this.arrivalAirport === other.arrivalAirport
+                && this.arrivalDateTime.isSame(other.arrivalDateTime)
+                && this.elapsedTime === other.elapsedTime
+                && this.equipment === other.equipment
+                && this.marketingFlightNumber === other.marketingFlightNumber
+                && this.marketingAirline === other.marketingAirline
+                && this.operatingFlightNumber === other.operatingFlightNumber
+                && this.operatingAirline === other.operatingAirline;
+        };
+
         return Segment;
     });

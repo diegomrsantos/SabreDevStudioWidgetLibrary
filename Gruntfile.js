@@ -2,6 +2,10 @@ module.exports = function (grunt) {
     require('time-grunt')(grunt);
     require('load-grunt-tasks')(grunt);
 
+    var properties = {
+        cdnBase: 'http://analytics.sabre.com/sdsdemo/dslab/widgets/static'
+    };
+
     grunt.initConfig({
 
         pkg: grunt.file.readJSON('package.json'),
@@ -58,31 +62,27 @@ module.exports = function (grunt) {
             }
         },
 
-        typescript: {
+        ts: {
             app: {
                 src: ['src/**/*.ts'],
-                dest: 'build-js',
+                outDir: 'build-js',
                 options: grunt.file.readJSON('tsconfig.json').compilerOptions
             },
             'watch-src': {
                 src: ['src/main/**/*.ts'],
-                dest: 'build-js/main',
+                outDir: 'build-js/main',
+                watch: 'src/main/**/*.ts',
                 options: (function () {
                     var optionsFromConfigFile = grunt.file.readJSON('tsconfig.json').compilerOptions;
-                    optionsFromConfigFile.watch = true;
-                    optionsFromConfigFile.atBegin = true;
-                    optionsFromConfigFile.references = ["typings/tsd.d.ts"];
                     return optionsFromConfigFile;
                 })()
             },
             'watch-all': {
                 src: ['src/**/*.ts'],
-                dest: 'build-js',
+                outDir: 'build-js',
+                watch: 'src/**/*.ts',
                 options: (function () {
                     var optionsFromConfigFile = grunt.file.readJSON('tsconfig.json').compilerOptions;
-                    optionsFromConfigFile.watch = true;
-                    optionsFromConfigFile.atBegin = true;
-                    optionsFromConfigFile.references = ["typings/tsd.d.ts"];
                     return optionsFromConfigFile;
                 })()
             }
@@ -113,10 +113,7 @@ module.exports = function (grunt) {
         },
 
         bootlint: {
-            options: {
-                stoponerror: false,
-                relaxerror: ['W001', 'W002', 'W003', 'W005', 'E001', 'W012']
-            },
+            options: grunt.file.readJSON('bootlintOptions.json'),
             files: ['widgets/view-templates/**/*.tpl.html']
         },
 
@@ -133,7 +130,7 @@ module.exports = function (grunt) {
             widgets_img: {
                 expand: true,
                 cwd: 'widgets/',
-                src: ['img/airlineLogos/**/*', 'img/icons/**/*', 'img/sabre.png', 'img/sabre2.png'],
+                src: ['img/sabre.png', 'img/sabre2.png'],
                 dest: 'dist/widgets/',
                 options: {
                     nonull: true
@@ -158,15 +155,14 @@ module.exports = function (grunt) {
             },
             'cdnify-inline-style-images-urls': { // cannot use grunt-cdnify because it does not support inline css styles which we use
                 expand: true,
-                src: 'widgets/view-templates/**/*.html',
+                src: ['widgets/view-templates/**/*.html', 'src/main/**/*.html'],
                 dest: 'build/templates_cdnified/',
                 options: {
                     nonull: true,
                     process: function (content, srcpath) {
-                        var cdnBase = 'http://analytics.sabre.com/sdsdemo/dslab/widgets/static';
 
-                        var localToCdnPathMappings = {
-                            '/widgets/img/destinations/': '/destinations/' // no rewrite needed if CDN resources structure is the same as local.
+                        var localToCdnPathMappings = { // no rewrite needed if CDN resources structure is the same as local.
+                            '/widgets/img/destinations/': '/destinations/'
                         };
 
                         function rewriteRelativeLink(path) {
@@ -183,7 +179,7 @@ module.exports = function (grunt) {
 
                         var INLINE_STYLE_BACKGROUND_IMAGE_REGEX = /(url\(\')([^\']+)(\'\))/gi; // url('../widgets/img/destinations/{{destination}}.jpg')
                         return content.replace(INLINE_STYLE_BACKGROUND_IMAGE_REGEX, function (wholeMatchedString, urlPart, pathPart, closePart) {
-                            return urlPart + cdnBase + rewriteRelativeLink(pathPart) + closePart;
+                            return urlPart + properties.cdnBase + rewriteRelativeLink(pathPart) + closePart;
                         });
                     }
                 }
@@ -223,7 +219,7 @@ module.exports = function (grunt) {
                             var baseDir = 'build/www/';
                             var toParentDirectoryPathElement = buildToParentDirectoryPathElement(baseDir, srcpath);
 
-                            var HTML_LINKS_TO_LOCAL_HTML_FILES_REGEX = /(href=\")(.+\.html)(\")/gi;
+                            var HTML_LINKS_TO_LOCAL_HTML_FILES_REGEX = /(href=\")(.+\.html.*)(\")/gi;
                             var IMG_LINKS_TO_LOCAL_IMG_FILES_REGEX = /(\<img\s+src=\")(.+)(\")/gi;
                             var STYLESHEET_LINKS_TO_LOCAL_CSS_REGEX = /(\<link\s+rel=\"stylesheet\".*href=\")(.+)(\"\>)/gi;
 
@@ -235,6 +231,52 @@ module.exports = function (grunt) {
                     }
                 }
             }
+        },
+
+        cdnify: {
+          widgetImages: {
+              options: {
+                  html: {
+                      'img[ng-src]': 'ng-src',
+                      'img[fallback-src]': 'fallback-src'
+                  },
+                  rewriter: function (url) {
+                      return url.replace('../widgets/img/airlineLogos/', properties.cdnBase + '/airlineLogos/');
+                  }
+              },
+              files: [{
+                  expand: true,
+                  src: 'build/templates_cdnified/**/*.html'
+              }]
+          },
+          icons: {
+              options: {
+                  rewriter: function (url) {
+                      return url.replace('../img/icons/', properties.cdnBase + '/icons/');
+                  }
+              },
+              files: [{
+                  expand: true,
+                  src: 'widgets/stylesheets/**/*.css'
+              }]
+          }
+        },
+
+        replace: {
+          cdnifyImgLinksInJS: {
+              options: {
+                  usePrefix: false,
+                  patterns: [
+                      {
+                          match: '\.\.\/widgets\/img',
+                          replacement: properties.cdnBase
+                      }
+                  ]
+              },
+              files: [
+                  {expand: true, src: 'build-js/main/**/*.js'}
+              ]
+          }
         },
 
         image_resize: { //WARN: along with installing grunt-image-resize, you HAVE to install manually imagemagick on your operating system. That grunt plugin depends on it. Without it installed you will be getting errors. See http://stackoverflow.com/questions/11703973/imagemagick-with-nodejs-not-working
@@ -305,7 +347,7 @@ module.exports = function (grunt) {
         ngtemplates: {
             sdsWidgets: {
                 cwd: 'build/templates_cdnified/src',
-                src: '../widgets/view-templates/**/*.html',
+                src: ['../widgets/view-templates/**/*.html', '../src/main/**/*.html'],
                 dest: 'build/ngtemplates/templateCacheCharger.js',
                 options: {
                     bootstrap:  function(module, templateCacheChargingScript) {
@@ -334,11 +376,19 @@ module.exports = function (grunt) {
             'compile-standalone-app': {
                 options: grunt.file.readJSON('r.compiler.options.json')
             },
+            'compile-standalone-app-no-uglify': {
+                options: (function () {
+                    var config = grunt.file.readJSON('r.compiler.options.json');
+                    config.optimize = "none";
+                    return config;
+                })()
+            },
             'compile-library-only': {
                 options: (function () {
                     var config = grunt.file.readJSON('r.compiler.options.json');
                     config.pragmas.excludeWhenBuiltAsLibraryOnly = true;
                     config.out = "dist/widgets/SDSWidgets.lib.min.js";
+                    config.optimize = "none";
                     return config;
                 })()
             }
@@ -351,12 +401,12 @@ module.exports = function (grunt) {
             cssbundle: {
                 files: {
                     'dist/widgets/css/SDS.min.css': [
-                          'widgets/stylesheets/**/*.css'
-                        , 'www/css/**/*.css'
-                        , 'bower_components/bootstrap/dist/css/bootstrap.css'
+                          'bower_components/bootstrap/dist/css/bootstrap.css'
                         , 'bower_components/angular-ui-select/dist/select.css'
                         , 'bower_components/angular-rangeslider/angular.rangeSlider.css'
                         , 'bower_components/titatoggle/dist/titatoggle-dist.css'
+                        , 'widgets/stylesheets/**/*.css'
+                        , 'www/css/**/*.css'
                     ]
                 }
             }
@@ -403,8 +453,8 @@ module.exports = function (grunt) {
         , 'typescript-pipeline'
         , 'unit-test'
         , 'copy:cdnify-inline-style-images-urls'
-        , 'ngtemplates'
-        , 'saveRevision'
+        , 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
         , 'requirejs:compile-standalone-app'
         , 'css-pipeline'
         , 'copy-static-resources'
@@ -415,8 +465,8 @@ module.exports = function (grunt) {
         //, 'lodashAutobuild:customBuild' // skipped lodash custom builds to save build time
         , 'typescript-pipeline'
         , 'copy:cdnify-inline-style-images-urls'
-        , 'ngtemplates'
-        , 'saveRevision'
+        , 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
         , 'requirejs:compile-standalone-app'
         , 'css-pipeline'
         , 'copy-static-resources'
@@ -427,8 +477,21 @@ module.exports = function (grunt) {
         //, 'lodashAutobuild:customBuild' // skipped lodash custom builds to save build time
         , 'typescript:app'
         , 'copy:cdnify-inline-style-images-urls'
-        , 'ngtemplates'
+        , 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
         , 'requirejs:compile-standalone-app'
+        , 'css-pipeline'
+        , 'copy-static-resources'
+    ]);
+
+    grunt.registerTask('dist-standalone-app-fast-no-uglify', [
+        'clean:dist'
+        //, 'lodashAutobuild:customBuild' // skipped lodash custom builds to save build time
+        , 'typescript:app'
+        , 'copy:cdnify-inline-style-images-urls'
+        , 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
+        , 'requirejs:compile-standalone-app-no-uglify'
         , 'css-pipeline'
         , 'copy-static-resources'
     ]);
@@ -437,23 +500,36 @@ module.exports = function (grunt) {
         'clean:dist'
         //, 'lodashAutobuild:customBuild' // skipped lodash custom builds to save build time
         , 'typescript-pipeline'
-        , 'unit-test'
+        //, 'unit-test'
         , 'copy:cdnify-inline-style-images-urls'
-        , 'ngtemplates'
-        , 'saveRevision'
+        , 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
         , 'requirejs:compile-library-only'
         , 'css-pipeline'
         , 'copy-static-resources'
+    ]);
+
+    grunt.registerTask('build-library-only-fast', [
+        //'clean:dist'
+        //, 'lodashAutobuild:customBuild' // skipped lodash custom builds to save build time
+        'typescript:app'
+        //, 'unit-test'
+        //, 'copy:cdnify-inline-style-images-urls'
+        //, 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
+        , 'requirejs:compile-library-only'
+        //, 'css-pipeline'
+        //, 'copy-static-resources'
     ]);
 
     grunt.registerTask('dist-all', [
         'clean:dist'
         //, 'lodashAutobuild:customBuild' // skipped lodash custom builds to save build time
         , 'typescript-pipeline'
-        , 'unit-test'
+        //, 'unit-test'
         , 'copy:cdnify-inline-style-images-urls'
-        , 'ngtemplates'
-        , 'saveRevision'
+        , 'cdnify:widgetImages'
+        , 'prepare-sources-pipeline'
         , 'requirejs:compile-standalone-app'
         , 'requirejs:compile-library-only'
         , 'css-pipeline'
@@ -468,9 +544,11 @@ module.exports = function (grunt) {
 
     grunt.registerTask('unit-test', 'karma:unit-Chrome');
 
-    grunt.registerTask('typescript-pipeline', ['tslint', 'typescript:app', 'jshint']);
+    grunt.registerTask('typescript-pipeline', ['tslint', 'ts:app', 'jshint']);
 
-    grunt.registerTask('css-pipeline', ['compass', 'bootlint', 'csslint', 'autoprefixer', 'cssmin:cssbundle']);
+    grunt.registerTask('css-pipeline', ['compass', 'bootlint', 'csslint', 'autoprefixer', 'cdnify:icons', 'cssmin:cssbundle']);
+
+    grunt.registerTask('prepare-sources-pipeline', ['ngtemplates', 'saveRevision', 'replace:cdnifyImgLinksInJS']);
 
     grunt.registerTask('copy-static-resources', [
         'copy:bootstrap_glyphicons_fonts'

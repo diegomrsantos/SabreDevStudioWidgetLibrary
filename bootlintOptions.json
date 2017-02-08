@@ -1,0 +1,21 @@
+{
+  "stoponerror": false,
+  "relaxerror": {
+     "W001": []
+    ,"W002": []
+    ,"W003": []
+    ,"W005": []
+    ,"E001": []
+    ,"W012": []
+    ,"E014": ["widgets/view-templates/partials/FlexibleDepartureReturnDates.tpl.html"]
+
+    ,"E042": ["widgets/view-templates/partials/FlexibleDepartureReturnDates.tpl.html"
+              , "widgets/view-templates/partials/SelectMonths.tpl.html"
+              , "widgets/view-templates/widgets/ChangeOriginSelect.tpl.html"
+              , "widgets/view-templates/widgets/SearchFormInspirationalWidget.tpl.html"
+              , "widgets/view-templates/widgets/SearchFormWidget.tpl.html"]
+
+    ,"E044": ["widgets/view-templates/partials/FlexibleDepartureReturnDates.tpl.html"
+              , "widgets/view-templates/widgets/SearchFormWidget.tpl.html"]
+  }
+}

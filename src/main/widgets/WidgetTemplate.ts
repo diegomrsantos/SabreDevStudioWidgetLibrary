@@ -9,6 +9,7 @@ define([
         , 'widgets/SDSWidgets'
         , 'widgets/BaseController'
         , 'webservices/' //TODO what webservice you will use
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           moment
@@ -18,6 +19,7 @@ define([
         , SDSWidgets
         , BaseController
         , WebServiceSrc //TODO what webservice you will use
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -69,7 +71,9 @@ define([
                 ) {
                 return {
                     scope: { // TODO params to your widget
-
+                        searchStartedCallback: '&?',
+                        searchSuccessCallback: '&?',
+                        searchErrorCallback: '&?'
                     },
                     replace: true,
                     templateUrl: '../widgets/view-templates/widgets/WidgetTemplate.tpl.html', //TODO rename
@@ -77,6 +81,7 @@ define([
                     controllerAs: 'ctrl',
                     link: function (scope, element, attrs, controller) {
                         controller.executeLifeSearchOnPredefinedCriteriaIfPresent(attrs.origin, attrs.destination, attrs.departureDate, attrs.returnDate);
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
                     }
                 };
             });

@@ -1,14 +1,19 @@
 define([
           'lodash'
+        , 'util/LodashExtensions'
+        , 'moment'
         , 'webservices/common/OTARequestFactory'
     ],
     function (
           _
+        , __
+        , moment
         , OTARequestFactory
     ) {
         'use strict';
 
-        function BargainFinderMaxRequestFactory() {
+        function BargainFinderMaxRequestFactory(configOverrides) {
+            OTARequestFactory.apply(this, [configOverrides]);
         }
 
         /**
@@ -92,6 +97,194 @@ define([
             } else {
                 return OTARequestFactory.prototype.createPriceRequestInformation.call(this);
             }
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createRequestTPAExtensions = function(requestedItinsCount, searchCriteria) {
+            var tpaExtensions = this.createIntelliSellTransaction(requestedItinsCount, searchCriteria.dateFlexibilityDays);
+            if(searchCriteria.diversityModelOptions){
+                _.extend(tpaExtensions, this.createDiversityControl(searchCriteria.diversityModelOptions));
+            }
+            return tpaExtensions;
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createIntelliSellTransaction = function(requestedItinsCount, dateFlexibilityDays) {
+            return {
+                "IntelliSellTransaction": {
+                    "RequestType": {
+                        "Name": this.getRequestType(requestedItinsCount, dateFlexibilityDays)
+                    }
+                }
+            };
+        };
+
+        /* jshint maxcomplexity:7 */
+        BargainFinderMaxRequestFactory.prototype.createDiversityControl = function(diversityModelOptions) {
+            var diversityControl:any = {"DiversityControl": {}};
+            _.extend(diversityControl.DiversityControl, this.createLowFareBucket(diversityModelOptions));
+            _.extend(diversityControl.DiversityControl, this.createPriceWeight(diversityModelOptions));
+            if(_.isNumber(diversityModelOptions.travelTimeWeight)){
+                _.extend(diversityControl.DiversityControl.Dimensions, this.createTravelTimeWeight(diversityModelOptions.travelTimeWeight));
+            }
+            if(__.isNumber(diversityModelOptions.carrier.weight)){
+                _.extend(diversityControl.DiversityControl.Dimensions, this.createCarrierOptions(diversityModelOptions));
+            }
+            if(__.isNumber(diversityModelOptions.operatingDuplicate.weight)){
+                _.extend(diversityControl.DiversityControl.Dimensions, this.createOperatingDuplicateOptions(diversityModelOptions));
+            }
+            if(__.isNumber(diversityModelOptions.inboundOutboundPairing.weight)){
+                _.extend(diversityControl.DiversityControl.Dimensions, this.createinboundOutboundPairingOptions(diversityModelOptions));
+            }
+            if(__.isNumber(diversityModelOptions.timeOfDay.weight)){
+                _.extend(diversityControl.DiversityControl.Dimensions, this.createTimeOfDayOptions(diversityModelOptions));
+            }
+            if(__.isNumber(diversityModelOptions.numberOfStopsWeight)){
+                _.extend(diversityControl.DiversityControl.Dimensions, this.createNonStopWeight(diversityModelOptions.numberOfStopsWeight));
+            }
+            return diversityControl;
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createLowFareBucket = function(diversityModelOptions) {
+
+            var lowFareBucket;
+            /* tslint:disable */
+            /*jshint ignore:start*/
+            if(diversityModelOptions.lowFareBucketMode == diversityModelOptions.LowFareBucketModeEnum.OPTION){
+                lowFareBucket = {
+                    "LowFareBucket" : {
+                        "Options": diversityModelOptions.lowFareBucket.toString()
+                    }
+                };
+            }
+            else if(diversityModelOptions.lowFareBucketMode == diversityModelOptions.LowFareBucketModeEnum.FARE_CUT_OFF){
+                lowFareBucket = {
+                    "LowFareBucket" : {
+                        "FareCutOff": diversityModelOptions.fareCutOff + "%"
+                    }
+                };
+            }
+            /*jshint ignore:end*/
+            /* tslint:enable */
+            return lowFareBucket;
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createPriceWeight = function(diversityModelOptions) {
+            return {
+                "Dimensions": {
+                    "PriceWeight": _.isNumber(diversityModelOptions.priceWeight) ? diversityModelOptions.priceWeight : diversityModelOptions.PRICE_WEIGHT_DEFAULT_VALUE
+                }
+            };
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createTravelTimeWeight = function(travelTimeWeight) {
+            return {
+                "TravelTime": {
+                    "Weight": travelTimeWeight
+                }
+            };
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createCarrierOptions = function(diversityModelOptions) {
+            var carrier = {
+                "Carrier": {
+                    "Weight": diversityModelOptions.carrier.weight,
+                    "OnlineIndicator": diversityModelOptions.carrier.onlineIndicator
+                }
+            };
+            if(__.isDefined(diversityModelOptions.carrier.default.options)){
+                _.extend(carrier.Carrier, {
+                    "Default": {
+                        "Options": diversityModelOptions.carrier.default.options.toString()
+                    }
+                });
+            }
+            if(diversityModelOptions.carrier.override.length > 0){
+                var override = {
+                    "Override": []
+                };
+                diversityModelOptions.carrier.override.forEach(function (currentValue) {
+                    override.Override.push({
+                        "Code": currentValue.code,
+                        "Options": currentValue.options.toString()
+                    });
+                });
+                _.extend(carrier.Carrier, override);
+            }
+            return carrier;
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createOperatingDuplicateOptions = function(diversityModelOptions) {
+            var operatingDuplicate = {
+                "OperatingDuplicate": {
+                    "Weight": diversityModelOptions.operatingDuplicate.weight
+                }
+            };
+            if(__.isDefined(diversityModelOptions.operatingDuplicate.preferredCarriers.selected.length > 0)){
+                var preferredCarriers = {
+                    "PreferredCarrier": []
+                };
+                diversityModelOptions.operatingDuplicate.preferredCarriers.selected.forEach(function (currentValue) {
+                    preferredCarriers.PreferredCarrier.push({
+                        "Code": currentValue
+                    });
+                });
+                _.extend(operatingDuplicate.OperatingDuplicate, preferredCarriers);
+            }
+            return operatingDuplicate;
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createinboundOutboundPairingOptions = function(diversityModelOptions) {
+            return {
+                "InboundOutboundPairing": {
+                    "Weight": diversityModelOptions.inboundOutboundPairing.weight,
+                    "Duplicates": _.isNumber(diversityModelOptions.inboundOutboundPairing.duplicates)
+                        ? diversityModelOptions.inboundOutboundPairing.duplicates : diversityModelOptions.INBOUND_OUTBOUND_PAIRING_DUPLICATES_DEFAULT_VALUE
+                }
+            };
+        };
+
+        BargainFinderMaxRequestFactory.prototype.createTimeOfDayOptions = function(diversityModelOptions) {
+            var timeOfDay:any = {
+                "TimeOfDay": {
+                    "Weight": diversityModelOptions.timeOfDay.weight,
+                }
+            };
+            if(diversityModelOptions.getDistributions().length > 0){
+                timeOfDay.TimeOfDay.Distribution = createDistributionsOutput(diversityModelOptions.getDistributions());
+            }
+            return timeOfDay;
+        };
+
+        function createDistributionsOutput(distributions){
+
+            return distributions.map(distribution => {
+                var distributionObj: any = {
+                    "Direction": distribution.direction.description,
+                    "Endpoint": distribution.endpoint.description
+                };
+                if(distribution.ranges.length > 0) {
+                    distributionObj.Range = createRangesOutput(distribution.ranges);
+                }
+                return distributionObj;
+            });
+        }
+
+        function createRangesOutput(ranges){
+            return ranges.map(range => {
+                return {
+                    "Begin": moment(range.begin).format("HH:mm"),
+                    "End": moment(range.end).format("HH:mm"),
+                    "Options": range.options + "%"
+                };
+            });
+        }
+
+        BargainFinderMaxRequestFactory.prototype.createNonStopWeight = function(nonStopWeight) {
+
+            return {
+                "StopsNumber": {
+                    "Weight": nonStopWeight
+                }
+            };
         };
 
         return BargainFinderMaxRequestFactory;

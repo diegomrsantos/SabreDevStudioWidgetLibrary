@@ -1,7 +1,6 @@
 /// <reference path="../../../../typings/tsd.d.ts" />
 define([
           'angular'
-        , 'moment'
         , 'lodash'
         , 'datamodel/MonetaryAmount'
         , 'webservices/SabreDevStudioWebServicesModule'
@@ -11,7 +10,6 @@ define([
     ],
     function (
           angular
-        , moment
         , _
         , MonetaryAmount
         , SabreDevStudioWebServicesModule
@@ -40,8 +38,7 @@ define([
                         return $q(function(resolve, reject) {
                             DestinationFinderDataService.getPricesForDestinations(searchCriteria).then(function(pricesForDestinations) {
                                 // mapping of destination code into list of offers to this destination
-                                var offersWithPrices = pricesForDestinations.FareInfo
-                                    .filter((offer) => isFinite(offer.LowestFare.Fare)); //WARN: LowestFare from API may be also just string "N/A"
+                                var offersWithPrices = pricesForDestinations.FareInfo;
                                 var allDestinationAirports = _.unique(offersWithPrices.map(function (offer) {
                                     return offer.DestinationLocation;
                                 }));
@@ -50,10 +47,21 @@ define([
                                         pricesForDestinationsGrouped: buildGroupingForDestinations(offersWithPrices, airportCodeIntoCityNameMapping)
                                         , originForPricesForDestinations: pricesForDestinations.OriginLocation
                                     };
+
+                                    if (searchCriteria.inspirationalSearchPolicy.maxOffersPerDestination) {
+                                        var trimFunction = _.partial(trimToMaxOffersPerDestination, searchCriteria.inspirationalSearchPolicy.maxOffersPerDestination);
+                                        orderedSummary.pricesForDestinationsGrouped = orderedSummary.pricesForDestinationsGrouped.map(trimFunction);
+                                    }
+
                                     resolve(orderedSummary);
                                 }, reject);
                             }, reject)
                         });
+                    }
+
+                    function trimToMaxOffersPerDestination(maxOffers, pricesForDestination) {
+                        var offersTrimmed = pricesForDestination.offers.slice(0, maxOffers);
+                        return _.extend({}, pricesForDestination, {offers: offersTrimmed});
                     }
 
                     function buildAirportToCityMapping(allDestinationAirports) {

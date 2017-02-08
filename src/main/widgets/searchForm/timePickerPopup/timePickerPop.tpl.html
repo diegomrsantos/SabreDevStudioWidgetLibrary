@@ -1,0 +1,11 @@
+<div class="input-group">
+    <input type="text" class="form-control input-sm" ng-model="inputTime" ng-disabled="disabledInt" time-format show-meridian="showMeridian" ng-focus="open()"/>
+    <div class="input-group-btn" ng-class="{open:isOpen}">
+        <button type="button" ng-disabled="disabledInt" class="btn btn-default input-sm" ng-class="{'btn-primary':isOpen}" data-toggle="dropdown" ng-click="toggle()">
+            <i class="glyphicon glyphicon-time"></i>
+        </button>
+        <div class="dropdown-menu pull-right">
+            <timepicker ng-model="inputTime" show-meridian="showMeridian" minute-step="minuteStep"></timepicker>
+        </div>
+    </div>
+</div>

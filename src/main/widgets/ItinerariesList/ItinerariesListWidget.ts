@@ -1,44 +1,48 @@
 define([
           'lodash'
+        , 'util/LodashExtensions'
         , 'moment'
         , 'angular'
         , 'angular_bootstrap'
         , 'widgets/SDSWidgets'
         , 'datamodel/ItinerariesList'
-        , 'util/ItinerariesStatisticsCalculator'
         , 'webservices/bargainFinderMax/BargainFinderMaxWebServices'
         , 'webservices/instaflights/InstaflightsDataService'
-        , 'datamodel/DiversitySwapper'
+        , 'datamodel/BestItineraryComparator'
         , 'widgets/ItinerariesList/ItineraryShortSummary'
         , 'widgets/ItinerariesList/ItineraryPricePerStopsPerAirlineSummary'
         , 'widgets/ItinerariesList/ItineraryDirective'
         , 'datamodel/ItinerariesListSummaryByAirlineAndNumberOfStops'
-        , 'datamodel/SearchCriteria'
+        , 'datamodel/search/SearchCriteriaFactory'
         , 'widgets/ItinerariesList/ItinerariesListSortCriteria'
-        , 'webservices/common/searchStrategyFactories/ItinerariesSearchStrategyFactory'
+        , 'widgets/ItinerariesList/ItinerariesListDiversitySwapperSortCriteria'
+        , 'webservices/common/searchStrategyFactories/ItinerariesSearchStrategyFactoryBagsFilteringDecorator'
         , 'webservices/common/searchStrategyFactories/BrandedItinerariesSearchStrategyFactory'
         , 'util/CommonDisplayDirectives'
+        , 'widgets/WidgetGlobalCallbacks'
     ],
     function (
           _
+        , __
         , moment
         , angular
         , angular_bootstrap
         , SDSWidgets
         , ItinerariesList
-        , ItinerariesStatisticsCalculator
         , BargainFinderMaxWebServices
         , InstaflightsDataService
-        , DiversitySwapper
+        , BestItineraryComparator
         , ItineraryShortSummary
         , ItineraryPricePerStopsPerAirlineSummary
         , ItineraryDirective
         , ItinerariesListSummaryByAirlineAndNumberOfStops
-        , SearchCriteria
+        , SearchCriteriaFactory
         , ItinerariesListSortCriteria
+        , ItinerariesListDiversitySwapperSortCriteria
         , ItinerariesSearchStrategyFactory
         , BrandedItinerariesSearchStrategyFactory
         , CommonDisplayDirectives
+        , WidgetGlobalCallbacks
     ) {
         'use strict';
 
@@ -46,36 +50,40 @@ define([
             .controller('ItineraryListCtrl', [
                       '$scope'
                     , '$filter'
-                    , 'ItinerariesSearchStrategyFactory'
+                    , '$location'
+                    , '$anchorScroll'
+                    , 'ItinerariesSearchStrategyFactoryBagsFilteringDecorator'
                     , 'BrandedItinerariesSearchStrategyFactory'
                     , 'SearchCriteriaBroadcastingService'
                     , 'newSearchCriteriaEvent'
-                    , 'StatisticsGatheringRequestsRegistryService'
-                    , 'ItineraryStatisticsBroadcastingService'
-                    , 'filteringCriteriaChangedEvent'
-                    , 'FilteringCriteriaChangedBroadcastingService'
                     , 'DateSelectedBroadcastingService'
                     , 'dateSelectedEvent'
                     , 'BargainFinderMaxDataService'
                     , 'noResultsFoundEvent'
+                    , 'filterServiceFactory'
                 , function (
                       $scope
                     , $filter
+                    , $location
+                    , $anchorScroll
                     , itinerariesSearchStrategyFactory
                     , brandedItinerariesSearchStrategyFactory
                     , SearchCriteriaBroadcastingService
                     , newSearchCriteriaEvent
-                    , StatisticsGatheringRequestsRegistryService
-                    , ItineraryStatisticsBroadcastingService
-                    , filteringCriteriaChangedEvent
-                    , FilteringCriteriaChangedBroadcastingService
                     , DateSelectedBroadcastingService
                     , dateSelectedEvent
                     , BargainFinderMaxDataService
                     , noResultsFoundEvent
+                    , filterServiceFactory
                 ) {
 
-                    var sortCriteria = new ItinerariesListSortCriteria();
+                    var sortCriteria;
+                    if($scope.activeSearchWebService === "bfm-enable-diversity-swapper") {
+                        sortCriteria = new ItinerariesListDiversitySwapperSortCriteria();
+                    }else {
+                        sortCriteria = new ItinerariesListSortCriteria();
+                    }
+
                     $scope.availableSortCriteria = sortCriteria.availableSortCriteria;
 
                     $scope.selectedFirstCriterion = { // must be object so that the scope of inputSelectDropdown can update the parent scope object, not its copy (like when it was a scalar)
@@ -87,6 +95,7 @@ define([
 
                     var itineraries;
                     var permittedItineraries;
+                    var permittedItinerariesSorted;
 
                     function resetNavigationAndSortCriteria() {
                         sortCriteria.resetSortCriteria();
@@ -97,10 +106,17 @@ define([
                         $scope.paginationSettings.currentPage = 1;
                     }
 
+                    var filterService = filterServiceFactory.newInstance($scope.itinerariesListId);
+
+                    filterService.configure({
+                        pricePropertyAmountAccessor: 'amount',
+                        pricePropertyAmountForPriceFrom: 'totalFareAmount',
+                        pricePropertyCurrencyForPriceFrom: 'totalFareCurrency'
+                    });
+
                     $scope.onSortingCriteriaChanged = function () {
                         sortCriteria.setSortCriteria($scope.selectedFirstCriterion.selected);
-                        // filtering in controller, not in view filter for performance reasons
-                        $scope.permittedItinerariesSorted = $filter('sortByCriteria')(permittedItineraries, sortCriteria.getCurrentSortCriteria());
+                        updateAllItinListsExportedToView(permittedItineraries);
 
                         // when changing sorting criteria, which will trigger resorting of itineraries list, reset current page to 1.
                         // The customer expectation upon changing sort criteria, is to see, at the very top of the list,
@@ -109,18 +125,40 @@ define([
                         $scope.paginationSettings.currentPage = 1;
                     };
 
+                    $scope.$watch('paginationSettings.currentPage', function (newPage, oldPage) {
+                        if (newPage === oldPage) {
+                            return;
+                        }
+                        $scope.permittedItinerariesSortedCurrentPageView = updateItinListForCurrentPage();
+                    });
+
+                    function updateAllItinListsExportedToView(permittedItins) {
+                        // filtering in controller, not in view filter for performance reasons
+                        permittedItinerariesSorted = $filter('sortByCriteria')(permittedItins, sortCriteria.getCurrentSortCriteria());
+                        $scope.permittedItinerariesSortedCurrentPageView = updateItinListForCurrentPage();
+                    }
+
+                    function updateItinListForCurrentPage() {
+                        var startIdx = ($scope.paginationSettings.currentPage - 1) * $scope.itemsPerPage;
+                        var endIdx = startIdx + $scope.itemsPerPage;
+                        return permittedItinerariesSorted.slice(startIdx, endIdx);
+                    }
+
                     /**
                      * Recalculates itinerary list summaries:
                      * 1. _short_ summary, that is the cheapest itinerary, shortest and the best.
                      * 2. summary per stops per airline, which is the lowest price for every airline returned, for every stop count
                      */
                     function recalculateSummaries() {
+
+                        var sortCriteriaArray = sortCriteria.sortCriteriaNaturalOrder.map(criteria => criteria.propertyName);
+
                         $scope.bestItinerariesSummary = {
-                            cheapest: itineraries.getCheapestItinerary(),
-                            best: _.last($scope.permittedItinerariesSorted.slice().sort(DiversitySwapper.comparator)),// have to sort on copy, not original, not to mutate original array which is the source for displaying the itineraries list
-                            shortest: itineraries.getShortestItinerary()
+                            cheapest: itineraries.getCheapestItinerary(sortCriteriaArray),
+                            best: _.last(permittedItinerariesSorted.slice().sort(BestItineraryComparator.comparator)),// have to sort on copy, not original, not to mutate original array which is the source for displaying the itineraries list
+                            shortest: itineraries.getShortestItinerary(sortCriteriaArray)
                         };
-                        $scope.summaryPerStopsPerAirline = (new ItinerariesListSummaryByAirlineAndNumberOfStops($scope.permittedItinerariesSorted)).getSummaries();
+                        $scope.summaryPerStopsPerAirline = (new ItinerariesListSummaryByAirlineAndNumberOfStops(permittedItinerariesSorted)).getSummaries();
                     }
 
                     function processNewItineraries(newSearchCriteria, itins) {
@@ -144,15 +182,20 @@ define([
 
                     function processItinerariesUpdate(newSearchCriteria) {
                         permittedItineraries = itineraries.getPermittedItineraries();
-                        $scope.permittedItinerariesSorted = $filter('sortByCriteria')(permittedItineraries, sortCriteria.getCurrentSortCriteria());
-                        recalculateAndBroadcastStatistics();
+                        $scope.permittedItinerariesCount = permittedItineraries.length;
+                        updateAllItinListsExportedToView(permittedItineraries);
+                        filterService.updateFiltersState(itineraries.getPermittedItineraries());
                         recalculateSummaries();
                         updateSearchAirports(newSearchCriteria);
                     }
 
                     function clearModel() {
                         itineraries = undefined;
-                        $scope.permittedItinerariesSorted = undefined;
+                        permittedItineraries = undefined;
+                        permittedItinerariesSorted = undefined;
+                        $scope.permittedItinerariesSortedCurrentPageView = undefined;
+                        $scope.bestItinerariesSummary = undefined;
+                        $scope.summaryPerStopsPerAirline = undefined;
                     }
 
                     function processServiceErrorMessages(newSearchCriteria, businessErrorMessages) {
@@ -170,27 +213,54 @@ define([
                         $scope.processSearchCriteria(newSearchCriteria);
                     });
 
+                    var searchSuccessCallback = __.cancellable(function (searchCriteria, newItins) {
+                        $scope.searchSuccessCallback({
+                            itineraries: newItins,
+                            searchCriteria: searchCriteria
+                        });
+                        processNewItineraries(searchCriteria, newItins);
+                    });
+
+                    var searchErrorCallback = __.cancellable(function (searchCriteria, errorMessages) {
+                        $scope.searchErrorCallback({
+                            errorMessages: errorMessages,
+                            searchCriteria: searchCriteria
+                        });
+                        processServiceErrorMessages(searchCriteria, errorMessages);
+                    });
+
+                    var searchUpdateCallback = __.cancellable(function (searchCriteria, newItins) {
+                        $scope.searchSuccessCallback({
+                            itineraries: newItins,
+                            searchCriteria: searchCriteria
+                        });
+                        updateWithNewItineraries(searchCriteria, newItins);
+                    });
+
+                    var resultsStreamEndCallback = __.cancellable(() => $scope.allSearchesComplete());
+
                     $scope.processSearchCriteria = function(searchCriteria) {
+                        $scope.searchStartedCallback({searchCriteria: searchCriteria});
+
                         if (!$scope.activeSearch) { //active search disabled
                             return;
                         }
 
-                        searchStrategy.search(searchCriteria,
-                            _.partial(processNewItineraries, searchCriteria),
-                            _.partial(processServiceErrorMessages, searchCriteria),
-                            _.partial(updateWithNewItineraries, searchCriteria));
+                        searchStrategy.search(searchCriteria, {
+                                successCallback: _.partial(searchSuccessCallback, searchCriteria),
+                                failureCallback: _.partial(searchErrorCallback, searchCriteria),
+                                updateCallback: _.partial(searchUpdateCallback, searchCriteria),
+                                streamEndCallback: resultsStreamEndCallback
+                            }
+                        );
                     };
 
-                    $scope.$on(filteringCriteriaChangedEvent, function () {
-                        var currentFilteringFunctions = FilteringCriteriaChangedBroadcastingService.filteringFunctions;
-                        itineraries.applyFilters(currentFilteringFunctions);
+                    filterService.onFilterChange(function (filteringFn) {
+                        itineraries.applyFilters(filteringFn);
                         permittedItineraries = itineraries.getPermittedItineraries();
-                        $scope.permittedItinerariesSorted = $filter('sortByCriteria')(permittedItineraries, sortCriteria.getCurrentSortCriteria());
+                        $scope.permittedItinerariesCount = permittedItineraries.length;
+                        updateAllItinListsExportedToView(permittedItineraries);
                         recalculateSummaries();
-                        $scope.$evalAsync();
-                        // We need to call the digest cycle manually, as we changed the model outside of Angular (we have read the state of filters UI controls (sliders), sent new filtering functions thru event and applied to the itineraries domain model).
-                        // In case of discrete filters (checkboxes), the digest cycle is already triggered by Angular (checkboxes with ng-model), while range sliders are component totally outside of Angular: that is why we have to call digest after change from these components.
-                        // It is evalAsync, not just digest(), because in case of discrete values filters, the digest cycle is already in progress.
                     });
 
                     $scope.$on(dateSelectedEvent, function () {
@@ -198,10 +268,14 @@ define([
                         // the web service which produced the data, from which the particular date was selected
                         var webService = selectItinerariesListProducingService(DateSelectedBroadcastingService.originalDataSourceWebService);
 
-                        webService.getItineraries(newSearchCriteria).then(
-                              _.partial(processNewItineraries, newSearchCriteria)
-                            , _.partial(processServiceErrorMessages, newSearchCriteria)
-                        );
+                        $scope.searchStartedCallback({searchCriteria: newSearchCriteria});
+                        webService
+                            .getItineraries(newSearchCriteria)
+                            .then(
+                              _.partial(searchSuccessCallback, newSearchCriteria)
+                            , _.partial(searchErrorCallback, newSearchCriteria)
+                            )
+                            .finally(resultsStreamEndCallback);
                         $scope.$evalAsync();
                     });
 
@@ -223,13 +297,6 @@ define([
                         return _.isFunction(originalWebService.getItineraries);
                     }
 
-                    function recalculateAndBroadcastStatistics() {
-                        var requestedStatisticsDescriptions = StatisticsGatheringRequestsRegistryService.getAll();
-                        var statisticsCalculator = new ItinerariesStatisticsCalculator(itineraries.getPermittedItineraries());
-                        ItineraryStatisticsBroadcastingService.statistics = statisticsCalculator.getCurrentValuesBounds(requestedStatisticsDescriptions);
-                        ItineraryStatisticsBroadcastingService.broadcast();
-                    }
-
                     function updateSearchAirports(newSearchCriteria) {
                         $scope.searchCriteriaDepartureAirport = newSearchCriteria.getFirstLeg().origin;
                         $scope.searchCriteriaArrivalAirport = newSearchCriteria.getFirstLeg().destination;
@@ -239,17 +306,71 @@ define([
                         if (_.isUndefined(itineraries)) {
                             return false;
                         }
-                        return ($scope.permittedItinerariesSorted.length > 0);
+                        return ($scope.permittedItinerariesCount > 0);
                     };
 
+                    $scope.summaryItemClickedCallback = function (itineraryId) {
+                        $scope.paginationSettings.currentPage = getItineraryPage(itineraryId);
+                        var anchorId = $scope.getItinAnchorId(itineraryId);
+                        $location.hash(anchorId);
+                        $anchorScroll();
+                    };
+
+                    $scope.getItinAnchorId = function(itineraryId) {
+                        return '#SDS_itin_' + itineraryId;
+                    }
+
+                    function getItineraryPage(itineraryId) {
+                        var itinerarySequentialPosition = 1 + _.findIndex(permittedItinerariesSorted, itin => (itin.id === itineraryId));
+                        return Math.ceil(itinerarySequentialPosition / $scope.itemsPerPage);
+                    }
+
+                    $scope.$on('$destroy', function() {
+                        clearModel();
+                        delete $scope.availableSortCriteria;
+                        delete $scope.selectedFirstCriterion;
+                        delete $scope.paginationSettings;
+                        delete $scope.itemsPerPage;
+                        searchStrategyFactory = undefined;
+                        searchStrategy = undefined;
+
+                        // on destroying scope we have to clear also the callbacks that we passed to promises that may resolve after the scope is cleared (for example client navigated out of the view containing this directive (directive destroy), but still there are long http requests in progress).
+                        // BTW: these callbacks may still keep reference to objects on scope  (like in our case), thus also preventing the scope from being destroyed (mem leak) - not fixed yet.
+                        clearSearchCallbacks();
+                        clearScopeFunctionsExportedToView();
+                        filterService.destroy();
+                    });
+
+                    function clearSearchCallbacks() {
+                        searchSuccessCallback.cancel();
+                        searchUpdateCallback.cancel();
+                        searchErrorCallback.cancel();
+                        resultsStreamEndCallback.cancel();
+                    }
+
+                    function clearScopeFunctionsExportedToView() {
+                        delete $scope.isAnyDataToDisplayAvailable;
+                        delete $scope.onSortingCriteriaChanged;
+                        delete $scope.getItinAnchorId;
+                        delete $scope.summaryItemClickedCallback;
+                    }
+
                 }])
-            .directive('itineraryList', ['$templateCache', function ($templateCache) {
+            .directive('itineraryList', [function () {
                 return {
                     restrict: 'EA',
                     scope: {
                           activeSearch: '@?'
                         , activeSearchWebService: '@?'
                         , requestBrandedItineraries: '=?'
+                        , searchCriteria: '=?'
+                        , selectedItineraryCallback: '&?'
+                        , enableItinerarySelectButton: '@?'
+                        , searchStartedCallback: '&?'
+                        , searchSuccessCallback: '&?'
+                        , searchErrorCallback: '&?'
+                        , allSearchesComplete: '&?'
+                        , itinerariesListId: '@'
                     },
                     templateUrl: '../widgets/view-templates/widgets/ItinerariesListWidget.tpl.html',
                     controller: 'ItineraryListCtrl',
@@ -259,6 +380,10 @@ define([
                             scope.processSearchCriteria(predefinedSearchCriteria);
                         }
 
+                        if(__.isDefined(scope.searchCriteria)) {
+                            scope.processSearchCriteria(scope.searchCriteria);
+                        }
+
                         function buildSearchCriteriaFromPredefinedParameters() {
                             var origin = element.attr('origin');
                             var destination = element.attr('destination');
@@ -266,9 +391,11 @@ define([
                             var returnDateString = element.attr('return-date');
 
                             if (origin && destination && departureDateString && returnDateString) {
-                                return SearchCriteria.prototype.buildRoundTripTravelSearchCriteria(origin, destination, departureDateString, returnDateString);
+                                return SearchCriteriaFactory.buildRoundTripTravelSearchCriteria(origin, destination, departureDateString, returnDateString);
                             }
                         }
+
+                        WidgetGlobalCallbacks.linkComplete(scope, element);
                     }
 
                 };

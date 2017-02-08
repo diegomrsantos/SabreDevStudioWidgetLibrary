@@ -1,12 +1,12 @@
 {
   "name": "sabre-dev-studio-widgets",
-  "version": "1.0.0",
+  "version": "1.0.7",
   "authors": [
     "Tomasz Szymanski <Tomasz.Szymanski@sabre.com>"
   ],
   "main": [
-    "dist/widgets/SDSWidgets.min.js",
     "dist/widgets/SDSWidgets.lib.min.js",
+    "dist/widgets/SDSWidgets.min.js",
     "dist/widgets/css/SDS.min.css"
   ],
   "description": "Widgets demonstrating capabilities of Sabre Dev Studio",
@@ -47,17 +47,24 @@
     "angular-ui-select": "~0.12.0",
     "angular-sanitize": "1.3.16",
     "angular-img-fallback": "~0.1.3",
-    "angular-rangeslider": "~0.0.14",
+    "angular-rangeslider": "https://github.com/aug-riedinger/angular-rangeslider.git#ba85edf3ee77977d05a94fb1137ccbbb35349a2f",
+    "angular-spinner": "0.8.1",
     "ngstorage": "~0.3.7",
     "Chart.js": "~1.0.2",
     "angular-promise-extras": "~0.1.4",
     "iso-currency": "~0.2.0",
     "titatoggle": "~1.2.6",
-    "elementQuery": "https://github.com/TomekSzymanski/elementQuery.git",
-    "angular-touch": "1.3.16"
+    "angular-touch": "1.3.16",
+    "css-element-queries": "https://github.com/TomekSzymanski/css-element-queries.git#ae9109f3014d53a06c467621e18192e151bd483f",
+    "angular-google-maps": "~2.3.3",
+    "angular-simple-logger": "~0.1.7",
+    "nsPopover": "~0.6.8",
+    "WidgetsFilterPanel": "https://git.sabre.com/scm/smp/widgetsfilterpanel.git"
   },
   "resolutions": {
     "angular": "1.3.x",
-    "bootstrap": "~3.3.5"
+    "bootstrap": "~3.3.5",
+    "lodash": "3.10.x",
+    "moment": "2.10.x"
   }
 }

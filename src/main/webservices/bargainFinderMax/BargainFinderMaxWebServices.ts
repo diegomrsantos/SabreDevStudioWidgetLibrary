@@ -33,12 +33,14 @@ define([
                     , 'BargainFinderMaxAlternateDateWebService'
                     , 'ErrorReportingService'
                     , 'businessMessagesErrorHandler'
+                    , 'bfmRequestPcc'
                 , function (
                       $q
                     , bfmWebService
                     , bfmAltDatesWebService
                     , ErrorReportingService
                     , businessMessagesErrorHandler
+                    , bfmRequestPcc
                 ) {
 
                     /**
@@ -63,17 +65,22 @@ define([
                         }
                     }
 
-                    var bfmRequestFactory = new BargainFinderMaxRequestFactory();
+                    var bfmRequestFactory = new BargainFinderMaxRequestFactory({
+                        bfmRequestPcc: bfmRequestPcc
+                    });
 
                     var parser = new BFMResponseParser();
 
-                    var bfmBrandedRequestFactory = new BargainFinderMaxRequestFactory();
+                    var bfmBrandedRequestFactory = new BargainFinderMaxRequestFactory({
+                        bfmRequestPcc: bfmRequestPcc
+                    });
                     bfmBrandedRequestFactory.requestBrandedFares = true;
 
                     var brandedItinerariesParser = new BrandedBFMResponseParser();
 
                     /**
-                     * Returns ItinerariesList with branded itineraries (BrandedItinerary objects).
+                     * Returns itineraries with brand information if this information is available.
+                     * So it may return only branded itineraries, mix of branded and non-branded or only non-branded itineraries
                      * @param searchCriteria
                      * @returns {*}
                      */

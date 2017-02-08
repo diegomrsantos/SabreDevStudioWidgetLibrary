@@ -1,10 +1,16 @@
 <script type="text/ng-template" id="GeneralSearchCriteria">
 
-    <div class="SDS-row" ng-if="isVisible('ADTPaxNumber')">
-        <div class="SDS-col-element-xxs-12">
-            <div class="form-group SDS-col-element-xxs-12" ng-class="{'has-error':searchForm.$submitted && searchForm.ADTPaxNumber.$invalid}">
+    <div class="SDS-row" ng-if="isVisible('ADTPaxNumber') || isVisible('BagsRequested')">
+        <div class="SDS-col-element-xxs-3" ng-if="isVisible('ADTPaxNumber')">
+            <div class="form-group" ng-class="{'has-error':searchForm.$submitted && searchForm.ADTPaxNumber.$invalid}">
                 <label for="SDSSearchForm_ADTPaxNumber" class="input-sm control-label">Adults (12+)</label>
                 <input id="SDSSearchForm_ADTPaxNumber" type="number" name="ADTPaxNumber" value="1" min="1" max="9" required class="form-control input-sm SDSPaxNbrInput" ng-model="generalSearchCriteria.ADTPaxCount">
+            </div>
+        </div>
+        <div class="SDS-col-element-xxs-3" ng-if="isVisible('BagsRequested')">
+            <div class="form-group" ng-class="{'has-error':searchForm.$submitted && searchForm.bagsRequested.$invalid}">
+                <label for="SDSSearchForm_BagsRequested" class="input-sm control-label">Bags</label>
+                <select-bags id="SDSSearchForm_BagsRequested" name="BagsRequested" class="form-control input-sm" bags-requested="generalSearchCriteria.bagsRequested"></select-bags>
             </div>
         </div>
     </div>
@@ -80,7 +86,8 @@
 
                     <div>
                         <label>
-                            <input type="radio" name="advancedFlexibilityLoSSpecificationType" ng-model="flexDatesMode.activeMode" value="earliestDepartureLatestReturn.daysOfWeekAtDestination" class="">
+                            <input type="radio" name="advancedFlexibilityLoSSpecificationType" ng-model="flexDatesMode.activeMode"
+                                   value="earliestDepartureLatestReturn.daysOfWeekAtDestination">
                             Specify days of week to stay at destination
                         </label>
                         <div ng-if="flexDatesMode.activeMode === 'earliestDepartureLatestReturn.daysOfWeekAtDestination'">
@@ -107,31 +114,38 @@
         </div>
     </div>
 
-        <div ng-if="detailsVisibility.areAdvancedSearchOptionsCollapsed" class="SDSBottomBuffer-xs">
-            <div class="SDS-row">
-                <div class="SDS-col-element-xs-6 SDS-col-element-lg-3" ng-if="isVisible('PreferredAirline')">
-                    <div class="form-group SDS-form-inline-exclude">
-                        <label for="SDSSearchForm_PreferredAirline" class="input-sm control-label SDS-form-inline-exclude">Preferred Airline</label>
-                        <select-preferred-airlines class="input-sm SDS-form-inline-exclude" id="SDSSearchForm_PreferredAirline" name="PreferredAirline" preferred-airlines="preferredAirlines"></select-preferred-airlines>
-                        <!-- WARN: Lack of 'form-control' class is intentional. The component used in select preferred airline directive - the angular ui-select, is already styled as bootstrap button. Wrapping it in form-control here breaks the style (we get unnecessary wrapping. This issue is reported to ui-select and recognized as issue. No fix yet.  -->
-                    </div>
+    <div ng-if="detailsVisibility.areAdvancedSearchOptionsCollapsed" class="SDSBottomBuffer-xs">
+        <div class="SDS-row">
+            <div class="SDS-col-element-xs-6 SDS-col-element-lg-3" ng-if="isVisible('PreferredAirline')">
+                <div class="form-group SDS-form-inline-exclude">
+                    <label for="SDSSearchForm_PreferredAirline" class="input-sm control-label SDS-form-inline-exclude">Preferred Airline</label>
+                    <select-multiple-airlines class="input-sm SDS-form-inline-exclude" id="SDSSearchForm_PreferredAirline"
+                                               name="PreferredAirline" airlines="preferredAirlines"></select-multiple-airlines>
+                    <!-- WARN: Lack of 'form-control' class is intentional. The component used in select preferred airline directive
+                    - the angular ui-select, is already styled as bootstrap button. Wrapping it in form-control here breaks the style
+                    (we get unnecessary wrapping. This issue is reported to ui-select and recognized as issue. No fix yet.  -->
                 </div>
-                <div class="SDS-col-element-xs-6 SDS-col-element-lg-3" ng-if="isVisible('PreferredCabin')">
-                    <div class="form-group SDS-form-inline-exclude">
-                        <label for="SDSSearchForm_PreferredCabin" class="input-sm control-label SDS-form-inline-exclude">Cabin</label>
-                        <select-preferred-cabin name="PreferredCabin" class="form-control input-sm SDS-form-inline-exclude" id="SDSSearchForm_PreferredCabin" cabin-selected="generalSearchCriteria.preferredCabin"></select-preferred-cabin>
-                    </div>
+            </div>
+            <div class="SDS-col-element-xs-6 SDS-col-element-lg-3" ng-if="isVisible('PreferredCabin')">
+                <div class="form-group SDS-form-inline-exclude">
+                    <label for="SDSSearchForm_PreferredCabin" class="input-sm control-label SDS-form-inline-exclude">Cabin</label>
+                    <select-preferred-cabin name="PreferredCabin" class="form-control input-sm SDS-form-inline-exclude" id="SDSSearchForm_PreferredCabin" cabin-selected="generalSearchCriteria.preferredCabin"></select-preferred-cabin>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="SDSMaxWidth1280">
+        <diversity-swapper enabled="showDiversityOptions" internal-form-name="diversitySwapperForm"
+                       ng-model="diversityModelOptions" show-options="detailsVisibility.useDiversityModelOptions"></diversity-swapper>
+    </div>
 
     <div class="text-center SDSTopBuffer-xs">
-        <button type="submit" class="SDS-hidden-sm btn btn-primary btn-lg btn-block ">Search</button>
+        <button type="submit" class="SDS-hidden-sm btn btn-primary btn-lg btn-block">Search</button>
         <button type="submit" class="SDS-visible-sm-inline-block btn btn-primary btn-lg">Search</button>
     </div>
 
 </script>
-
 
 <div class="panel panel-default SDSWidget SDSResponsiveElement SDSSearchFormWidget" id="SDSSearchFormWidget_{{::widgetId}}">
     <div class="panel-body">
@@ -174,7 +188,7 @@
                                     Leaving on
                                 </label>
                                 <input-date class="input-group input-group-sm SDSDateInput" id="SDSSearchForm_DepartureDate" name="DepartureDate" required="true"
-                                            date="simpleTrip.DepartureDate" on-date-change="onDepartureDateChange()" min-date="{{::earliestTravelStart}}">
+                                            ng-model="simpleTrip.DepartureDate" on-date-change="onDepartureDateChange()" min-date="earliestTravelStart">
                                 </input-date>
                                 <div ng-show="searchForm.$submitted && searchForm.DepartureDate.$invalid" class="has-error">
                                     <small class="help-block" ng-show="searchForm.DepartureDate.$error.required">Choose departure date</small>
@@ -186,7 +200,7 @@
                                     Earliest departure
                                 </label>
                                 <input-date class="input-group input-group-sm SDSDateInput" id="SDSSearchForm_EarliestDepartureDate" name="EarliestDepartureDate" required
-                                            date="simpleTrip.EarliestDepartureDate" on-date-change="onEarliestDepartureDateChange()" min-date="{{::earliestTravelStart}}">
+                                            ng-model="simpleTrip.EarliestDepartureDate" on-date-change="onEarliestDepartureDateChange()" min-date="earliestTravelStart">
                                 </input-date>
                                 <div ng-show="searchForm.$submitted && searchForm.EarliestDepartureDate.$invalid" class="has-error">
                                     <small class="help-block" ng-show="searchForm.EarliestDepartureDate.$error.required">Set earliest departure date</small>
@@ -201,7 +215,7 @@
                                     Returning on
                                 </label>
                                 <input-date class="input-group input-group-sm SDSDateInput" id="SDSSearchForm_ReturnDate" name="ReturnDate" required="true"
-                                            date="simpleTrip.ReturnDate" on-date-change="onReturnDateChange()" min-date="{{::earliestTravelStart}}">
+                                            ng-model="simpleTrip.ReturnDate" on-date-change="onReturnDateChange()" min-date="earliestTravelStart">
                                 </input-date>
                                 <div ng-show="searchForm.$submitted && searchForm.ReturnDate.$invalid" class="has-error">
                                     <small class="help-block" ng-show="searchForm.ReturnDate.$error.required">Choose return date</small>
@@ -210,7 +224,7 @@
                             <div class="form-group" ng-class="{'has-error':searchForm.$submitted && searchForm.LatestReturnDate.$invalid}" ng-if="tripType === 'returnTrip' && flexDatesMode.isEarliestDepartureLatestReturnActive() && loadDeferredElements">
                                 <label for="SDSSearchForm_LatestReturnDate" class="input-sm control-label">Latest return</label>
                                 <input-date class="input-group input-group-sm SDSDateInput" id="SDSSearchForm_LatestReturnDate" name="LatestReturnDate" required
-                                            date="simpleTrip.LatestReturnDate" on-date-change="onLatestReturnDateChange()" min-date="{{::earliestTravelStart}}">
+                                            ng-model="simpleTrip.LatestReturnDate" on-date-change="onLatestReturnDateChange()" min-date="earliestTravelStart">
                                 </input-date>
                                 <div ng-show="searchForm.$submitted && searchForm.LatestReturnDate.$invalid" class="has-error">
                                     <small class="help-block" ng-show="searchForm.LatestReturnDate.$error.required">Set latest return date</small>
@@ -257,7 +271,7 @@
                             <div class="form-group" ng-class="{'has-error':searchFormMultiDestination.$submitted && searchFormMultiDestination.DepartureDate_{{$index}}.$invalid}">
                                 <label for="SDSSearchForm_DepartureDate_{{$index}}" class="input-sm control-label">Leaving on</label>
                                 <input-date class="input-group input-group-sm SDSDateInput" id="SDSSearchForm_DepartureDate_{{$index}}" name="DepartureDate_{{$index}}" required="true"
-                                            date="multiDestinationLegs[$index].DepartureDate" min-date="{{::earliestTravelStart}}">
+                                            ng-model="multiDestinationLegs[$index].DepartureDate" min-date="earliestTravelStart">
                                 </input-date>
                             </div>
                             <div ng-show="searchFormMultiDestination.$submitted && searchFormMultiDestination.DepartureDate_{{$index}}.$invalid" class="has-error">

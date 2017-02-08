@@ -34,6 +34,10 @@ define([
         this.itineraries.push(itin);
     };
 
+    ItinerariesList.prototype.addAll = function (itineraries) {
+        itineraries.forEach((itin) => this.itineraries.push(itin));
+    };
+
     /**
      * Adds passed itineraries list to this itineraries list. Just adds all new itineraries to the end of te current list.
      * @param itinerariesList
@@ -55,9 +59,17 @@ define([
      */
     ItinerariesList.prototype.addItinerariesListWithDedup = function(otherItinerariesList) {
         var dedupper = new ItinerariesDedupper();
-        this.itineraries = dedupper.dedupMerge(this.itineraries, otherItinerariesList.itineraries);
+        var itinsDedupped = dedupper.dedupMerge(this.itineraries, otherItinerariesList.itineraries);
+        this.itineraries = recalcIds(itinsDedupped);
         return this;
     };
+
+    function recalcIds(itineraries) {
+        return itineraries.map(function (itin, idx) {
+            itin.id = idx;
+            return itin;
+        });
+    }
 
     ItinerariesList.prototype.size = function () {
         return this.getPermittedItineraries().length;
@@ -71,24 +83,22 @@ define([
         };
     };
 
-    ItinerariesList.prototype.getCheapestItinerary = function () {
-        return _.min(this.getPermittedItineraries(), 'totalFareAmount');
+    ItinerariesList.prototype.getCheapestItinerary = function (sortCriteriaArray) {
+        return _.first(_.sortByAll(this.getPermittedItineraries(), _.union(['totalFareAmount'], sortCriteriaArray)));
     };
 
-    ItinerariesList.prototype.getShortestItinerary = function () {
-        return _.min(this.getPermittedItineraries(), 'duration');
+    ItinerariesList.prototype.getShortestItinerary = function (sortCriteriaArray) {
+        return _.first(_.sortByAll(this.getPermittedItineraries(), _.union(['duration'], sortCriteriaArray)));
     };
 
     /**
-     * Applies the array of filtering functions (filters) to the itineraries.
+     * Applies the filtering function to the itineraries.
      * So that itinerary is NOT marked as filteredOut (not permitted), it must pass all the filters.
-     * @param filteringFunctions
+     * @param filteringFn
      */
-    ItinerariesList.prototype.applyFilters = function (filteringFunctions) {
+    ItinerariesList.prototype.applyFilters = function (filteringFn) {
         this.getItineraries().forEach(function (itin) {
-            itin.filteredOut = !filteringFunctions.every(function (filteringFunction) {
-                return filteringFunction(itin);
-            });
+            itin.filteredOut = !filteringFn(itin);
         });
     };
 

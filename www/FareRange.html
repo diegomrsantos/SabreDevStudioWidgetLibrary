@@ -23,7 +23,13 @@
     </search-form>
 
     <error-display class="embeddedWidget"></error-display>
-    <fare-range class="embeddedWidget fareRangeWidget"></fare-range>
+    <network-error-display></network-error-display>
+	<validation-error-display></validation-error-display>
+    <div style="width: 500px; margin: auto">
+        <fare-range class="embeddedWidget fareRangeWidget">
+            <p>Prices for tickets booked in last weeks for the same route</p>
+        </fare-range>
+    </div>
     <!-- see also with specifying current lowest fare -->
     <!--<fare-range data-origin="FRA" data-destination="BKK" data-departure-date="2015-10-27" data-return-date="2015-11-10" data-current-lowest-fare="400" data-current-lowest-fare-currency="USD"></fare-range>-->
 

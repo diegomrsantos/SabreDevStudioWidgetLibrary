@@ -27,6 +27,9 @@ define([
                         angular.element(el).on('click', function () {
                             angular.element(el).addClass('ng-hide');
                         });
+                        scope.$on('$destroy', function() {
+                            angular.element(el).off('click');
+                        });
                     }
                 }
             })

@@ -1,8 +1,10 @@
 define([
           'webservices/common/parsers/OTAResponseParser'
+        , 'webservices/common/parsers/AbstractOTAResponseParser'
     ],
     function (
           OTAResponseParser
+          , AbstractOTAResponseParser
     ) {
         'use strict';
 
@@ -56,6 +58,14 @@ define([
                     , segmentsAbsoluteIndexes: segmentsAbsoluteIndexes
                 };
             });
+        };
+
+        BFMResponseParser.prototype.parseItinerary = function (responseItin) {
+            var itinerary = AbstractOTAResponseParser.prototype.parseItinerary.call(this, responseItin);
+            if(responseItin.TPA_Extensions.DiversitySwapper){
+                itinerary.weightedPriceAmount = responseItin.TPA_Extensions.DiversitySwapper.WeighedPriceAmount;
+            }
+            return itinerary;
         };
 
         return BFMResponseParser;
